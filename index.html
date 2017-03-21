@@ -2,13 +2,16 @@
 <html>
 <head>
 	<title>Casino JS</title>
-
+	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="CSS.css">
 </head>
 <body>
 
 	<!-- JavaScript -->
-	<script type="text/javascript" src = "casino.js"></script>
+	<script type="text/javascript" src = "toybox.js" defer></script>
+	<script type="text/javascript" src = "update.js" defer></script>
+	<script type="text/javascript" src = "player.js" defer></script>
+	<script type="text/javascript" src = "casino.js" defer></script>
 	
 	<div id = "wrapper">
 
@@ -42,9 +45,9 @@
 			</ul>
 
 		<div id="buttons">
-			<button onclick = "gameLoop(1)">Play 1 Roll</button>
-			<button onclick = "gameLoop(10)">Play 10 Rolls</button>
-			<button onclick = "gameLoop(100)">Play 100 Rolls</button>
+			<button onclick = "casino.gameLoop(1)">Play 1 Roll</button>
+			<button onclick = "casino.gameLoop(10)">Play 10 Rolls</button>
+			<button onclick = "casino.gameLoop(100)">Play 100 Rolls</button>
 		</div><!-- buttons -->
 
 	</div><!-- wrapper -->

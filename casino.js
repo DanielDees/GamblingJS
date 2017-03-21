@@ -1,111 +1,48 @@
-//Player
-var bet = 1;
-var round = 1;
-var bank = 100;
-var losses = 0;
-var betMultiplier = 2.1;
-var highestBet = 0;
+var casino = new Casino();
 
-//Casino
-var odds = 30;
-var minBet = 1;
-var payoutRate = 2;
+function Casino() {
 
-//Random Gen
-function roll() {
-	
-	return Math.random() * 100;
-}
+	this.round = 1;
 
-//Get max bets that can be made before going negative in the bank
-function getMaxSafeBets() {
-	
-	var max = 0;
+	//Casino
+	this.odds = 30;
+	this.minBet = 1;
+	this.payoutRate = 2;
 
-	//Get max times bet can occur before going over bank limit
-	while(bet * Math.pow(betMultiplier, max) < bank) { max++; }
+	//Casino game
+	this.game = function() {
 
-	return max;
-}
+		//Winning roll
+		if(roll() < this.odds) {
 
-//Get the odds of exceeding the max bet if continued betting occurs
-function getMaxSafeBetsOdds() {
-	
-	return (Math.pow((100 - odds) / 100, getMaxSafeBets()) * 100).toFixed(2)
-}
+			//Pay winnings to player
+			player.bank += ((player.bet * this.payoutRate) - player.bet);
 
-//Get the Casino Info
-function getCasinoInfo() {
-	
-	document.getElementById("odds").innerHTML = "Odds: " + odds + "%";
-	document.getElementById("min-bet").innerHTML = "Min Bet: " + minBet;
-	document.getElementById("payout-rate").innerHTML = "Payout Rate: " + payoutRate + "x";
-}
+			//Reset to min bet
+			player.bet = this.minBet;
 
-//Get Gambling Info
-function getGambleInfo() {
-	
-	document.getElementById("bet").innerHTML = "Bet: " + bet.toFixed(2);
-	document.getElementById("bank").innerHTML = "Bank: " + bank.toFixed(2);
-	document.getElementById("max-safe-bets").innerHTML = "Max Safe Bets: " + getMaxSafeBets();
-	document.getElementById("max-safe-bets-odds").innerHTML = "Max Safe Bets Odds: " + getMaxSafeBetsOdds() + "%";
-}
+			//Next betting round
+			this.round++;
+		}
+		//Losing roll
+		else {
 
-//Get Player Info
-function getPlayerInfo() {
+			//Pay bet to casino
+			player.bank -= player.bet;
 
-	document.getElementById("multiplier").innerHTML = "Bet Multi: " + betMultiplier.toFixed(2) + "x";
-	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet.toFixed(2);
-}
+			//Multiply bet
+			player.bet *= player.betMulti;
 
-//Update the DOM Info
-function pageUpdate() {
-
-	document.getElementById("day").innerHTML = "Round: " + round;
-
-	//Get Casino Info
-	getCasinoInfo();
-
-	//Get Gambling Info
-	getGambleInfo();
-
-	//Get Player Info
-	getPlayerInfo();
-}
-
-//Casino game
-function game() {
-
-	//Winning roll
-	if(roll() < odds) {
-
-		//Pay winnings to player
-		bank += ((bet * payoutRate) - bet);
-
-		//Reset to min bet
-		bet = minBet;
-
-		//Next betting round
-		round++;
+			//Check for highest bet
+			if (player.bet >= player.highestBet) { player.highestBet = player.bet; }
+		}
 	}
-	//Losing roll
-	else {
 
-		//Pay bet to casino
-		bank -= bet;
+	//For fast running the game.
+	this.gameLoop = function(rounds) {
 
-		//Multiply bet
-		bet *= betMultiplier;
+		for (var i = 0; i < rounds; i++) { this.game(); }
 
-		//Check for highest bet
-		if (bet >= highestBet) { highestBet = bet; }
+		gameDisplay.update();
 	}
-}
-
-//For fast running the game.
-function gameLoop(rounds) {
-
-	for (var i = 0; i < rounds; i++) { game(); }
-
-	pageUpdate();
 }
