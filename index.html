@@ -9,38 +9,44 @@
 
 	<!-- JavaScript -->
 	<script type="text/javascript" src = "casino.js"></script>
-
-	<h1>Casino JS</h1>
 	
-	<h2 id = "day">Round: 1</h2>
-	
-	<h3>Casino Info</h3>
+	<div id = "wrapper">
+		
+		<h1>Casino JS</h1>
+		
+		<h2 id = "day">Round: 1</h2>
+		
+		<h3>Casino Info</h3>
 
-		<ul>
-			<li id = "odds">Odds: </li>
-			<li id = "min-bet">Min Bet: </li>
-			<li id = "payout-rate">Payout Rate: </li>
-		</ul>
+			<ul>
+				<li id = "odds">Odds: </li>
+				<li id = "min-bet">Min Bet: </li>
+				<li id = "payout-rate">Payout Rate: </li>
+			</ul>
 
-	<h3>Gamble Info</h3>
+		<h3>Gamble Info</h3>
 
-		<ul>
-			<li id = "bank">Bank: </li>
-			<li id = "multiplier">Bet Multi: </li>
-			<li id = "max-safe-bets">Max Safe Bets: </li>
-			<li id = "max-safe-bets-odds">Max Safe Bets Odds: </li>
-		</ul>
+			<ul>
+				<li id = "bank">Bank: </li>
+				<li id = "multiplier">Bet Multi: </li>
+				<li id = "max-safe-bets">Max Safe Bets: </li>
+				<li id = "max-safe-bets-odds">Max Safe Bets Odds: </li>
+			</ul>
 
-	<h3>Player Info</h3>
+		<h3>Player Info</h3>
 
-		<ul>
-			<li id = "bet">Bet: </li>
-			<!-- <li id = "losses">Losses: </li> -->
-			<li id = "highestBet">Highest Bet: </li>
-		</ul>
+			<ul>
+				<li id = "bet">Bet: </li>
+				<!-- <li id = "losses">Losses: </li> -->
+				<li id = "highestBet">Highest Bet: </li>
+			</ul>
+		
+		<div id="buttons">
+			<button onclick = "gameLoop(1)">Play 1 Roll</button>
+			<button onclick = "gameLoop(10)">Play 10 Rolls</button>
+		</div><!-- buttons -->
 
-	<button onclick = "gameLoop(1)">Play 1 Roll</button>
-	<button onclick = "gameLoop(10)">Play 10 Rolls</button>
+	</div><!-- wrapper -->
 
 </body>
 </html>

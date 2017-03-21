@@ -1,4 +1,39 @@
 body {
-
 	font-family: Courier;
+	background-color: #FFFFFC;
+	margin-left: 20px;
+}
+h2 {
+	margin-left: 30px;
+	color: #C55;
+}
+
+h3 {
+	margin-left: 50px;
+	color: purple;
+}
+
+ul li {
+	margin-left: 50px;
+}
+
+#buttons {
+	margin-left: 40px;
+	padding-top: 10px;
+}
+
+button {
+	margin: 5px;
+	padding: 10px;
+	border: none;
+	border-radius: 5px;
+}
+
+button:hover {
+	background-color: #BB3;
+}
+
+button:active {
+	background-color: #CC3;
+	color: #333;
 }
