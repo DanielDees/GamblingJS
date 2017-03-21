@@ -13,8 +13,8 @@ function Casino_DOM_Updater() {
 	//Get Gambling Info
 	this.setGambleInfo = function() {
 		
-		document.getElementById("bet").innerHTML = "Bet: " + player.bet.toFixed(2);
 		document.getElementById("bank").innerHTML = "Bank: " + player.bank.toFixed(2);
+		document.getElementById("multiplier").innerHTML = "Bet Multi: " + player.betMulti + "x";
 		document.getElementById("max-safe-bets").innerHTML = "Max Safe Bets: " + getMaxSafeBets();
 		document.getElementById("max-safe-bets-odds").innerHTML = "Max Safe Bets Odds: " + getMaxSafeBetsOdds() + "%";
 	};
@@ -22,7 +22,8 @@ function Casino_DOM_Updater() {
 	//Get Player Info
 	this.setPlayerInfo = function() {
 
-		document.getElementById("multiplier").innerHTML = "Bet Multi: " + player.betMulti + "x";
+		document.getElementById("bet").innerHTML = "Bet: " + player.bet.toFixed(2) + " (Payout: " +  (player.bet + (player.bet * casino.payoutRate)).toFixed(2) + ")";
+		document.getElementById("investment").innerHTML = "Round Investment: " + player.investment.toFixed(2);
 		document.getElementById("highestBet").innerHTML = "Highest Bet: " + player.highestBet.toFixed(2);
 	};
 

@@ -4,45 +4,44 @@ function Casino() {
 
 	this.round = 1;
 
-	//Casino
+	//Table rules
 	this.odds = 30;
 	this.minBet = 1;
 	this.payoutRate = 2;
 
-	//Casino game
+	//Pay winnings
+	this.pay = function(person) {
+
+		//Don't subtract initial bet because it is included in the payout.
+		person.bank += person.bet * this.payoutRate;
+	};
+
+	//Betting Method
 	this.game = function() {
 
 		//Winning roll
 		if(roll() < this.odds) {
 
-			//Pay winnings to player
-			player.bank += ((player.bet * this.payoutRate) - player.bet);
+			//Pay winnings
+			this.pay(player);
 
 			//Reset to min bet
-			player.bet = this.minBet;
+			player.win();
 
 			//Next betting round
 			this.round++;
 		}
 		//Losing roll
-		else {
-
-			//Pay bet to casino
-			player.bank -= player.bet;
-
-			//Multiply bet
-			player.bet *= player.betMulti;
-
-			//Check for highest bet
-			if (player.bet >= player.highestBet) { player.highestBet = player.bet; }
-		}
-	}
+		else { player.lose(); }
+	};
 
 	//For fast running the game.
-	this.gameLoop = function(rounds) {
+	this.gameLoop = function(rolls, rounds) {
 
-		for (var i = 0; i < rounds; i++) { this.game(); }
+		//Play once for every roll
+		for (var i = 0; i < rolls; i++) { this.game(); }
 
+		//Update page info
 		gameDisplay.update();
-	}
+	};
 }

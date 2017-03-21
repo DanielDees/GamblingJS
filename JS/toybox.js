@@ -1,4 +1,4 @@
-//Random Gen
+//RNG 1-100
 function roll() {
 	
 	return Math.random() * 100;
@@ -10,7 +10,7 @@ function getMaxSafeBets() {
 	var max = 0;
 
 	//Get max times bet can occur before going over bank limit
-	while(player.bet * Math.pow(player.betMulti, max) <= player.bank) { max++; }
+	while(player.bet * Math.pow(player.betMulti, max + 1) < player.bank) { max++; }
 
 	return max;
 }
