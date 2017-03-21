@@ -1,10 +1,11 @@
+
+
 //Player
 var bet = 1;
 var day = 1;
-var bank = 0;
-var dailyGamble = 1000;
+var bank = 1000;
 var winnings = 0;
-var betMultiplier = 2;
+var betMultiplier = 2.1;
 var highestBet = 0;
 
 //Casino
@@ -18,28 +19,50 @@ function roll() {
 	return Math.random() * 100;
 }
 
+//Get the Casino Info
+function getCasinoInfo() {
+	
+	document.getElementById("odds").innerHTML = "Odds: " + odds + "%";
+	document.getElementById("min-bet").innerHTML = "Min Bet: " + minBet;
+	document.getElementById("payout-rate").innerHTML = "Payout Rate: " + payoutRate + "x";
+}
+
+function getGambleInfo() {
+	
+	document.getElementById("bet").innerHTML = "Bet: " + bet.toFixed(2);
+	document.getElementById("bank").innerHTML = "Bank: " + bank.toFixed(2);
+}
+
+function getPlayerInfo() {
+
+	document.getElementById("winnings").innerHTML = "Winnings: " + winnings.toFixed(2);
+	document.getElementById("multiplier").innerHTML = "Bet Multi: " + betMultiplier.toFixed(2) + "x";
+	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet.toFixed(2);
+}
+
 //Update the DOM Info
 function pageUpdate() {
 
-	document.getElementById("payout-rate").innerHTML = "Payout Rate: " + payoutRate + "x";
-	document.getElementById("min-bet").innerHTML = "Min Bet: " + minBet;
-	document.getElementById("odds").innerHTML = "Odds: " + odds;
-	document.getElementById("day").innerHTML = "Day: " + day;
-	document.getElementById("bet").innerHTML = "Bet: " + bet;
-	document.getElementById("bank").innerHTML = "Bank: " + bank;
-	document.getElementById("winnings").innerHTML = "Winnings: " + winnings;
-	document.getElementById("multiplier").innerHTML = "Bet Multi: " + betMultiplier;
-	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet;
-	document.getElementById("dailyGamble").innerHTML = "Today's Money: " + dailyGamble;
+	document.getElementById("day").innerHTML = "Round: " + day;
 
+	//Get Casino Info
+	getCasinoInfo();
+
+	//Get Gambling Info
+	getGambleInfo();
+
+	//Get Player Info
+	getPlayerInfo();
+	
+	//Run Casino Game
 	game();
 }
 
 //Casino game
 function game() {
 
-	//Use 1k saved for gambling
-	winnings = dailyGamble;
+	//Use bank for gambling
+	winnings = bank;
 
 	//Winning roll
 	if(roll() < odds) {
@@ -47,7 +70,7 @@ function game() {
 		//Pay winnings to player
 		winnings += ((bet * payoutRate) - bet);
 
-		//Player resets to minimum bet
+		//Reset to min bet
 		bet = minBet;
 	}
 	//Losing roll
@@ -56,18 +79,15 @@ function game() {
 		//Pay bet to casino
 		winnings -= bet;
 
-		//Double bet amount for next roll
+		//Multiply bet
 		bet *= betMultiplier;
 
 		//Check for highest bet
 		if (bet >= highestBet) { highestBet = bet; }
 	}
 
-	//Save 1k for next day
-	winnings -= dailyGamble;
-
-	//Add difference to bank
-	bank += winnings;
+	//Return money to bank
+	bank = winnings;
 
 	//Go to next day
 	day++;
