@@ -1,9 +1,8 @@
 //Player
 var bet = 1;
-var day = 1;
 var round = 1;
 var bank = 100;
-var winnings = 0;
+var losses = 0;
 var betMultiplier = 2.1;
 var highestBet = 0;
 
@@ -55,7 +54,6 @@ function getGambleInfo() {
 //Get Player Info
 function getPlayerInfo() {
 
-	document.getElementById("winnings").innerHTML = "Winnings: " + winnings.toFixed(2);
 	document.getElementById("multiplier").innerHTML = "Bet Multi: " + betMultiplier.toFixed(2) + "x";
 	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet.toFixed(2);
 }
@@ -73,33 +71,28 @@ function pageUpdate() {
 
 	//Get Player Info
 	getPlayerInfo();
-	
-	//Run Casino Game
-	game();
 }
 
 //Casino game
 function game() {
 
-	//Use bank for gambling
-	winnings = bank;
-
 	//Winning roll
 	if(roll() < odds) {
 
 		//Pay winnings to player
-		winnings += ((bet * payoutRate) - bet);
+		bank += ((bet * payoutRate) - bet);
 
 		//Reset to min bet
 		bet = minBet;
 
+		//Next betting round
 		round++;
 	}
 	//Losing roll
 	else {
 
 		//Pay bet to casino
-		winnings -= bet;
+		bank -= bet;
 
 		//Multiply bet
 		bet *= betMultiplier;
@@ -107,10 +100,12 @@ function game() {
 		//Check for highest bet
 		if (bet >= highestBet) { highestBet = bet; }
 	}
+}
 
-	//Return money to bank
-	bank = winnings;
+//For fast running the game.
+function gameLoop(rounds) {
 
-	//Go to next day
-	//day++;
+	for (var i = 0; i < rounds; i++) { game(); }
+
+	pageUpdate();
 }
