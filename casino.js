@@ -1,9 +1,7 @@
-
-
 //Player
 var bet = 1;
 var day = 1;
-var bank = 1000;
+var bank = 100;
 var winnings = 0;
 var betMultiplier = 2.1;
 var highestBet = 0;
@@ -19,6 +17,23 @@ function roll() {
 	return Math.random() * 100;
 }
 
+//Get max bets that can be made before going negative in the bank
+function getMaxSafeBets() {
+	
+	var max = 0;
+
+	//Get max times bet can occur before going over bank limit
+	while(bet * Math.pow(betMultiplier, max) < bank) { max++; }
+
+	return max;
+}
+
+//Get the odds of exceeding the max bet if continued betting occurs
+function getMaxSafeBetsOdds() {
+	
+	return (Math.pow((100 - odds) / 100, getMaxSafeBets()) * 100).toFixed(2)
+}
+
 //Get the Casino Info
 function getCasinoInfo() {
 	
@@ -27,12 +42,16 @@ function getCasinoInfo() {
 	document.getElementById("payout-rate").innerHTML = "Payout Rate: " + payoutRate + "x";
 }
 
+//Get Gambling Info
 function getGambleInfo() {
 	
 	document.getElementById("bet").innerHTML = "Bet: " + bet.toFixed(2);
 	document.getElementById("bank").innerHTML = "Bank: " + bank.toFixed(2);
+	document.getElementById("max-safe-bets").innerHTML = "Max Safe Bets: " + getMaxSafeBets();
+	document.getElementById("max-safe-bets-odds").innerHTML = "Max Safe Bets Odds: " + getMaxSafeBetsOdds() + "%";
 }
 
+//Get Player Info
 function getPlayerInfo() {
 
 	document.getElementById("winnings").innerHTML = "Winnings: " + winnings.toFixed(2);
