@@ -1,6 +1,7 @@
 //Player
 var bet = 1;
 var day = 1;
+var round = 1;
 var bank = 100;
 var winnings = 0;
 var betMultiplier = 2.1;
@@ -62,7 +63,7 @@ function getPlayerInfo() {
 //Update the DOM Info
 function pageUpdate() {
 
-	document.getElementById("day").innerHTML = "Round: " + day;
+	document.getElementById("day").innerHTML = "Round: " + round;
 
 	//Get Casino Info
 	getCasinoInfo();
@@ -91,6 +92,8 @@ function game() {
 
 		//Reset to min bet
 		bet = minBet;
+
+		round++;
 	}
 	//Losing roll
 	else {
@@ -109,5 +112,5 @@ function game() {
 	bank = winnings;
 
 	//Go to next day
-	day++;
+	//day++;
 }
