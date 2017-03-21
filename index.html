@@ -2,6 +2,8 @@
 <html>
 <head>
 	<title>Casino JS</title>
+
+	<link rel="stylesheet" type="text/css" href="CSS.css">
 </head>
 <body>
 
@@ -11,16 +13,32 @@
 	<h1>Casino JS</h1>
 	
 	<h2 id = "day">Day: 1</h2>
-	<ul>
-		<li id = "bet">Bet: </li>
-		<li id = "bank">Bank: </li>
-		<li id = "winnings">Winnings: </li>
-		<li id = "multiplier">Multi: </li>
-		<li id = "highestBet">Highest Bet: </li>
-	</ul>
+	
+	<h3>Casino Info</h3>
+
+		<ul>
+			<li id = "odds">Odds: </li>
+			<li id = "min-bet">Min Bet: </li>
+			<li id = "payout-rate">Payout Rate: </li>
+		</ul>
+
+	<h3>Gamble Info</h3>
+
+		<ul>
+			<li id = "bank">Bank: </li>
+			<li id = "multiplier">Bet Multi: </li>
+		</ul>
+
+	<h3>Player Info</h3>
+
+		<ul>
+			<li id = "bet">Bet: </li>
+			<li id = "winnings">Winnings: </li>
+			<li id = "highestBet">Highest Bet: </li>
+			<li id = "dailyGamble">Today's Money: </li>
+		</ul>
 
 	<button onclick = "pageUpdate()">Update</button>
-
 
 </body>
 </html>

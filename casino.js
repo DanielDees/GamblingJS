@@ -18,61 +18,49 @@ function roll() {
 	return Math.random() * 100;
 }
 
+//Update the DOM Info
 function pageUpdate() {
 
+	document.getElementById("payout-rate").innerHTML = "Payout Rate: " + payoutRate + "x";
+	document.getElementById("min-bet").innerHTML = "Min Bet: " + minBet;
+	document.getElementById("odds").innerHTML = "Odds: " + odds;
 	document.getElementById("day").innerHTML = "Day: " + day;
 	document.getElementById("bet").innerHTML = "Bet: " + bet;
 	document.getElementById("bank").innerHTML = "Bank: " + bank;
 	document.getElementById("winnings").innerHTML = "Winnings: " + winnings;
-	document.getElementById("multiplier").innerHTML = "Multi: " + betMultiplier;
+	document.getElementById("multiplier").innerHTML = "Bet Multi: " + betMultiplier;
 	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet;
+	document.getElementById("dailyGamble").innerHTML = "Today's Money: " + dailyGamble;
+
+	game();
 }
 
 //Casino game
-function game(day) {
-	
-	//Default the values
-	var turn = 0;
+function game() {
 
 	//Use 1k saved for gambling
 	winnings = dailyGamble;
 
-	//Start day at min bet
-	bet = minBet;
+	//Winning roll
+	if(roll() < odds) {
 
-	//Play 100x or until loss
-	while(turn < 100 && winnings > 0) {
+		//Pay winnings to player
+		winnings += ((bet * payoutRate) - bet);
 
-		//Winning roll
-		if(roll() < odds) {
+		//Player resets to minimum bet
+		bet = minBet;
+	}
+	//Losing roll
+	else {
 
-			//Pay winnings to player
-			winnings += ((bet * payoutRate) - bet);
+		//Pay bet to casino
+		winnings -= bet;
 
-			console.log("Bet: " + bet + " | Won: " + (bet * payoutRate));
+		//Double bet amount for next roll
+		bet *= betMultiplier;
 
-			//Player resets to minimum bet
-			bet = minBet;
-		}
-		//Losing roll
-		else {
-
-			//Pay bet to casino
-			winnings -= bet;
-
-			console.log("Bet: " + bet + " | Lost: " + bet);
-
-			//Double bet amount for next roll
-			bet *= betMultiplier;
-
-			if (bet >= highestBet) { 
-
-				highestBet = bet;
-				//console.log("Day: " + (day + 1) + " | bet: " + bet); 
-			}
-		}
-
-		turn++;
+		//Check for highest bet
+		if (bet >= highestBet) { highestBet = bet; }
 	}
 
 	//Save 1k for next day
@@ -81,14 +69,6 @@ function game(day) {
 	//Add difference to bank
 	bank += winnings;
 
-	console.log("DAY: " + (day + 1));
-	console.log("Winnings: " + winnings);
-	console.log("Bank account: " + bank);
-}
-
-//Spend x days gambling
-function daysGambling(days) {
-
-	//Visit the casino every day
-	for (var i = 0; i < days; i++) { game(i); }
+	//Go to next day
+	day++;
 }
