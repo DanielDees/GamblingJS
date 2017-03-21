@@ -1,5 +1,6 @@
 //Player
 var bet = 1;
+var day = 1;
 var bank = 0;
 var dailyGamble = 1000;
 var winnings = 0;
@@ -15,6 +16,16 @@ var payoutRate = 2;
 function roll() {
 	
 	return Math.random() * 100;
+}
+
+function pageUpdate() {
+
+	document.getElementById("day").innerHTML = "Day: " + day;
+	document.getElementById("bet").innerHTML = "Bet: " + bet;
+	document.getElementById("bank").innerHTML = "Bank: " + bank;
+	document.getElementById("winnings").innerHTML = "Winnings: " + winnings;
+	document.getElementById("multiplier").innerHTML = "Multi: " + betMultiplier;
+	document.getElementById("highestBet").innerHTML = "Highest Bet: " + highestBet;
 }
 
 //Casino game
