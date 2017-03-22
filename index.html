@@ -8,9 +8,10 @@
 	<link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
 </head>
 <body>
-
-	<!-- JavaScript -->
+	
+	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+	<!-- JavaScript -->
 	<script type="text/javascript" src = "JS/toybox.js" defer></script>
 	<script type="text/javascript" src = "JS/update.js" defer></script>
 	<script type="text/javascript" src = "JS/player.js" defer></script>
@@ -53,8 +54,8 @@
 
 			<!-- Roll rates -->
 			<button onclick = "casino.gameLoop()" id = "rollRate">Roll 1x</button><br>
-			<button onclick = "casino.rollRateMulti(10)">Raise Rate 10x</button>
-			<button onclick = "casino.rollRateMulti(0.1)">Lower Rate 10x</button><br>
+			<button onclick = "casino.rollRateMod(10)">Raise Rate 10x</button>
+			<button onclick = "casino.rollRateMod(0.1)">Lower Rate 10x</button><br>
 
 			<!-- Payout rates -->
 			<button onclick = "casino.payoutRateMod(0.1)">Payout Rate + 0.1x</button>

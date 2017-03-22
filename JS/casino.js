@@ -22,8 +22,8 @@ function Casino() {
 		person.bank += person.bet * this.payoutRate;
 	};
 
-	//Change roll rate per game loop
-	this.rollRateMulti = function(mod) {
+	//Change roll rate
+	this.rollRateMod = function(mod) {
 
 		if (this.rollRate * mod <= this.MAX_ROLL_RATE && this.rollRate * mod >= this.MIN_ROLL_RATE) {
 
