@@ -35,6 +35,7 @@
 				<li id = "multiplier">Bet Multi: </li>
 				<li id = "max-safe-bets">Max Safe Bets: </li>
 				<li id = "max-safe-bets-odds">Max Safe Bets Odds: </li>
+				<li id = "avg-return">Avg Profit Per Round: </li>
 			</ul>
 
 		<h3>Player Info</h3>
@@ -47,10 +48,11 @@
 			</ul>
 
 		<div id="buttons">
-			<button onclick = "casino.gameLoop(1)">Play 1 Roll</button>
-			<button onclick = "casino.gameLoop(10)">Play 10 Rolls</button>
-			<button onclick = "casino.gameLoop(100)">Play 100 Rolls</button><br>
-			<button onclick = "casino.gameLoop(1000000)">Play 1,000,000 Rolls (Testing Button)</button>
+			<button onclick = "casino.gameLoop(1)">Roll 1x</button>
+			<button onclick = "casino.gameLoop(10)">Roll 10x</button>
+			<button onclick = "casino.gameLoop(100)">Roll 100x</button><br>
+			<button onclick = "casino.gameLoop(1000000)">Roll 1,000,000x</button><br>
+			<button onclick = "gameDisplay.resetAll()">Reset to Defaults</button>
 		</div><!-- buttons -->
 
 	</div><!-- wrapper -->

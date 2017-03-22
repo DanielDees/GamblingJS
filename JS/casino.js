@@ -44,4 +44,15 @@ function Casino() {
 		//Update page info
 		gameDisplay.update();
 	};
+
+	//Reset to defaults
+	this.reset = function() {
+
+		this.round = 1;
+
+		//Table rules
+		this.odds = 30;
+		this.minBet = 1;
+		this.payoutRate = 2;
+	}
 }

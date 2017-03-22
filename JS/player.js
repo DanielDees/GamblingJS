@@ -40,4 +40,21 @@ function Casino_Player() {
 		//Check for highest bet
 		if (this.bet >= this.highestBet) { this.highestBet = this.bet; }
 	};
+
+	//Reset to defaults
+	this.reset = function() {
+
+		//Cash
+		this.bank = 100;
+		this.losses = 0;
+		this.investment = 0;
+		
+		//Betting
+		this.bet = 1;
+		this.betMulti = 1.5;
+		this.highestBet = 1;
+
+		//Betting safety checks
+		this.betSafetyRate = 0;
+	}
 }

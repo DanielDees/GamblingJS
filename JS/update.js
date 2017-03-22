@@ -17,6 +17,7 @@ function Casino_DOM_Updater() {
 		$("#multiplier").html("Bet Multi: " + player.betMulti + "x");
 		$("#max-safe-bets").html("Max Safe Bets: " + getMaxSafeBets());
 		$("#max-safe-bets-odds").html("Max Safe Bets Odds: " + getMaxSafeBetsOdds() + "%");
+		$("#avg-return").html("Avg Profit Per Round: " + ((player.bank - 100) / casino.round).toFixed(2));
 	};
 
 	//Get Player Info
@@ -41,4 +42,15 @@ function Casino_DOM_Updater() {
 		//Get Player Info
 		this.setPlayerInfo();
 	};
+
+	//Reset page to default values
+	this.resetAll = function() {
+
+		//Reset to defaults
+		player.reset();
+		casino.reset();
+
+		//Update the DOM Info
+		this.update();
+	}
 }
