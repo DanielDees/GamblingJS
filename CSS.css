@@ -1,5 +1,5 @@
 body {
-	font-family: Courier;
+	font-family: Space Mono;
 	background-color: #FFFFFC;
 	margin-left: 20px;
 }
@@ -18,16 +18,18 @@ ul li {
 	margin-left: 50px;
 }
 
-#buttons {
+#roll_buttons #casino_buttons #player_buttons {
 	margin-left: 40px;
 	padding-top: 10px;
 }
 
 button {
-	margin: 5px;
-	padding: 10px;
+	margin: 4px;
+	margin-right: 0;
+	padding: 8px;
 	border: none;
 	border-radius: 5px;
+	font-family: Space Mono;
 }
 
 button:hover {

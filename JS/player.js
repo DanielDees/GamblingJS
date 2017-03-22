@@ -56,5 +56,5 @@ function Casino_Player() {
 
 		//Betting safety checks
 		this.betSafetyRate = 0;
-	}
+	};
 }

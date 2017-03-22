@@ -4,6 +4,11 @@
 	<title>Casino JS</title>
 	<meta charset="utf-8">
 	<link rel="stylesheet" type="text/css" href="CSS.css">
+	<!-- Google Fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Droid+Serif" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Droid+Sans+Mono" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Anonymous+Pro" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css?family=Oxygen+Mono|Space+Mono" rel="stylesheet">
 </head>
 <body>
 
@@ -23,9 +28,9 @@
 		<h3>Casino Info</h3>
 
 			<ul>
-				<li id = "odds">Odds: </li>
-				<li id = "min-bet">Min Bet: </li>
 				<li id = "payout-rate">Payout Rate: </li>
+				<li id = "odds">Win Odds: </li>
+				<li id = "min-bet">Min Bet: </li>
 			</ul>
 
 		<h3>Gamble Info</h3>
@@ -33,26 +38,37 @@
 			<ul>
 				<li id = "bank">Bank: </li>
 				<li id = "multiplier">Bet Multi: </li>
-				<li id = "max-safe-bets">Max Safe Bets: </li>
-				<li id = "max-safe-bets-odds">Max Safe Bets Odds: </li>
-				<li id = "avg-return">Avg Profit Per Round: </li>
+				<li id = "avg-return">Avg Profit: </li>
+				<li id = "max-safe-bets">Safe Bets: </li>
+				<li id = "max-safe-bets-odds">Safe Bets Odds: </li>
 			</ul>
 
 		<h3>Player Info</h3>
 
 			<ul>
-				<li id = "bet">Bet: </li>
+				<li id = "bet">Bet Amount: </li>
 				<!-- <li id = "losses">Losses: </li> -->
-				<li id = "investment">Round Investment: </li>
+				<li id = "investment">Investment: </li>
 				<li id = "highestBet">Highest Bet: </li>
 			</ul>
 
-		<div id="buttons">
-			<button onclick = "casino.gameLoop(1)">Roll 1x</button>
-			<button onclick = "casino.gameLoop(10)">Roll 10x</button>
-			<button onclick = "casino.gameLoop(100)">Roll 100x</button><br>
-			<button onclick = "casino.gameLoop(1000000)">Roll 1,000,000x</button><br>
-			<button onclick = "gameDisplay.resetAll()">Reset to Defaults</button>
+		<div id="roll_buttons">
+
+			<!-- Roll rates -->
+			<button onclick = "casino.gameLoop()" id = "rollRate">Roll 1x</button><br>
+			<button onclick = "casino.rollRateMulti(10)">Raise Rate 10x</button>
+			<button onclick = "casino.rollRateMulti(0.1)">Lower Rate 10x</button><br>
+
+			<!-- Payout rates -->
+			<button onclick = "casino.payoutRateMod(0.1)">Payout Rate + 0.1x</button>
+			<button onclick = "casino.payoutRateMod(-0.1)">Payout Rate - 0.1x</button><br>
+
+			<!-- Win odds -->
+			<button onclick = "casino.oddsMod(1)">Odds + 1%</button>
+			<button onclick = "casino.oddsMod(-1)">Odds - 1%</button><br>
+
+			<!-- Reset ALL values -->
+			<button onclick = "gameDisplay.resetAll()">Reset</button>
 		</div><!-- buttons -->
 
 	</div><!-- wrapper -->
