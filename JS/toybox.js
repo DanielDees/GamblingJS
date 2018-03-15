@@ -18,5 +18,5 @@ function getMaxSafeBets() {
 //Get the odds of exceeding the max bet if continued betting occurs
 function getMaxSafeBetsOdds() {
 	
-	return (Math.pow((100 - casino.odds) / 100, getMaxSafeBets()) * 100).toFixed(6);
+	return (Math.pow((100 - casino.odds) / 100, getMaxSafeBets()) * 100).toFixed(8);
 }
