@@ -15,73 +15,48 @@ function Casino() {
 	this.minBet = 1;
 	this.payoutRate = 2;
 
-	//Pay winnings
-	this.pay = function(person) {
-
-		//Don't subtract initial bet because it is included in the payout.
+	this.pay = (person) => {
 		person.bank += person.bet * this.payoutRate;
 	};
 
-	//Change roll rate
-	this.rollRateMod = function(mod) {
-
-		if (this.rollRate * mod <= this.MAX_ROLL_RATE && this.rollRate * mod >= this.MIN_ROLL_RATE) {
-
-			this.rollRate *= mod;
-		};
-
-		//Update Roll button
-		gameDisplay.setButtonInfo();
+	this.setRollRate = (rolls) => {
+		this.rollRate = rolls;
 	};
 
-	//Change payout rate
-	this.payoutRateMod = function(mod) {
-
-		if (this.payoutRate + mod >= 0) { this.payoutRate += mod; }
-
-		//Update Casino Info
-		gameDisplay.setCasinoInfo();
+	this.setPayoutRate = (rate) => {
+		this.payoutRate = rate;
 	};
 
-	this.oddsMod = function(mod) {
-		
-		if(this.odds + mod >= 0 && this.odds + mod <= 100) { this.odds += mod; }
-
-		//Update Casino Info
-		gameDisplay.setCasinoInfo();
+	this.setOdds = (percent) => {
+		this.odds = percent;
 	};
 
-	//Betting Method
-	this.game = function() {
+	this.roll = () => {
+		return Math.random() * 100;
+	}
 
-		//Winning roll
-		if(roll() < this.odds) {
+	this.game = () => {
 
-			//Pay winnings
-			this.pay(player);
-
-			//Reset to min bet
-			player.win();
-
-			//Next betting round
-			this.round++;
+		if(this.roll() >= this.odds) {
+			player.lose();
+			return;			
 		}
-		//Losing roll
-		else { player.lose(); }
+		
+		this.pay(player);
+
+		player.win();
+
+		this.round++;
 	};
 
-	//For fast running the game.
-	this.gameLoop = function(rounds) {
+	this.gameLoop = () => {
 
-		//Play once for every roll
 		for (var i = 0; i < this.rollRate; i++) { this.game(); }
 
-		//Update page info
 		gameDisplay.update();
 	};
 
-	//Reset to defaults
-	this.reset = function() {
+	this.reset = () => {
 
 		this.round = 1;
 

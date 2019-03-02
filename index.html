@@ -3,71 +3,71 @@
 <head>
 	<title>Casino JS</title>
 	<meta charset="utf-8">
-	<link rel="stylesheet" type="text/css" href="CSS.css">
+
 	<!-- Google Fonts -->
 	<link href="https://fonts.googleapis.com/css?family=Space+Mono" rel="stylesheet">
-</head>
-<body>
-	
+
+	<!-- Bootstrap -->
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css" integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+
+	<link rel="stylesheet" type="text/css" href="CSS.css">
+
 	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-	<!-- JavaScript -->
-	<script type="text/javascript" src = "JS/toybox.js" defer></script>
-	<script type="text/javascript" src = "JS/update.js" defer></script>
-	<script type="text/javascript" src = "JS/player.js" defer></script>
-	<script type="text/javascript" src = "JS/casino.js" defer></script>
 	
-	<div id = "wrapper">
+	<!-- Chart.js -->
+	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+
+</head>
+<body>
+
+	<script type="text/javascript" src="JS/update.js" defer></script>
+	<script type="text/javascript" src="JS/player.js" defer></script>
+	<script type="text/javascript" src="JS/casino.js" defer></script>
+	
+	<div id="wrapper">
 
 		<h1>Casino JS</h1>
+		
+		<canvas id="graph"></canvas>
 
-		<h2 id = "day">Round: 1</h2>
+		<h2 id="round">Round: 1</h2>
 
 		<h3>Casino Info</h3>
 
-			<ul>
-				<li id = "payout-rate">Payout Rate: </li>
-				<li id = "odds">Win Odds: </li>
-				<li id = "min-bet">Min Bet: </li>
-			</ul>
-
-		<h3>Gamble Info</h3>
-
-			<ul>
-				<li id = "bank">Bank: </li>
-				<li id = "multiplier">Bet Multi: </li>
-				<li id = "avg-return">Avg Profit: </li>
-				<li id = "max-safe-bets">Safe Bets: </li>
-				<li id = "max-safe-bets-odds">Safe Bets Odds: </li>
-			</ul>
+			<ul class="row">
+				<li class="col-sm-2" id="payout-rate">Payout Rate: -</li>
+				<li class="col-sm-2" id="odds">Win Odds: -</li>
+				<li class="col-sm-2" id="min-bet">Min Bet: -</li>
+			</ul>			
 
 		<h3>Player Info</h3>
-
-			<ul>
-				<li id = "bet">Bet Amount: </li>
-				<!-- <li id = "losses">Losses: </li> -->
-				<li id = "investment">Investment: </li>
-				<li id = "highestBet">Highest Bet: </li>
+			
+			<ul class="row">
+				<li class="col-sm-3" id="bank">Bank: -</li>
+				<li class="col-sm-3" id="multiplier">Bet Multi: -</li>
+				<li class="col-sm-3" id="avg-return">Avg Profit: -</li>
+				<li class="col-sm-3" id="max-safe-bets">Safe Bets: -</li>
+				<li class="col-sm-3" id="max-safe-bets-odds">Safe Bets Odds: -</li>
+				<li class="col-sm-3" id="bet">Bet Amount: -</li>
+				<li class="col-sm-3" id="investment">Investment: -</li>
+				<li class="col-sm-3" id="highestBet">Highest Bet: -</li>
 			</ul>
 
 		<div id="buttons">
 
-			<!-- Roll rates -->
-			<button onclick = "casino.gameLoop()" id = "rollRate">Roll 1x</button><br>
-			<button onclick = "casino.rollRateMod(10)">Raise Rate 10x</button>
-			<button onclick = "casino.rollRateMod(0.1)">Lower Rate 10x</button><br>
+			<div class="row">
+				<input type="number" placeholder="Roll Count" id="rollRate">
+				<input type="number" placeholder="Payout Rate" id="payoutRate">
+				<input type="number" placeholder="Win %" id="winOdds">
+			</div>
 
-			<!-- Payout rates -->
-			<button onclick = "casino.payoutRateMod(0.1)">Payout Rate + 0.1x</button>
-			<button onclick = "casino.payoutRateMod(-0.1)">Payout Rate - 0.1x</button><br>
-
-			<!-- Win odds -->
-			<button onclick = "casino.oddsMod(1)">Odds + 1%</button>
-			<button onclick = "casino.oddsMod(-1)">Odds - 1%</button><br>
-
-			<!-- Reset ALL values -->
-			<button onclick = "gameDisplay.resetAll()">Reset</button>
-		</div><!-- roll_buttons -->
+			<div class="row">
+				<button onclick="casino.gameLoop()" id="rollRate">Roll 1x</button>
+				<button onclick="gameDisplay.resetAll()">Reset</button>
+			</div>
+			
+		</div>
 
 	</div><!-- wrapper -->
 

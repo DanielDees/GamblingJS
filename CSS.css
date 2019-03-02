@@ -29,6 +29,7 @@ ul {
 
 ul li {
 	margin-left: 50px;
+	list-style-type: none;
 }
 
 #buttons {
@@ -42,6 +43,7 @@ button {
 	padding: 8px;
 	border: none;
 	border-radius: 5px;
+	background-color: #991;
 	font-family: Space Mono;
 	min-width: 100px;
 	min-height: 35px;
