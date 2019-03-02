@@ -14,17 +14,15 @@
 
 	<!-- JQuery -->
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+
+	<!-- VUE -->
+	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
 	
 	<!-- Chart.js -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 
 </head>
 <body>
-
-	<script type="text/javascript" src="JS/update.js" defer></script>
-	<script type="text/javascript" src="JS/player.js" defer></script>
-	<script type="text/javascript" src="JS/casino.js" defer></script>
-	
 	<div id="wrapper">
 
 		<h1>Casino JS</h1>
@@ -36,40 +34,132 @@
 		<h3>Casino Info</h3>
 
 			<ul class="row">
-				<li class="col-sm-2" id="payout-rate">Payout Rate: -</li>
-				<li class="col-sm-2" id="odds">Win Odds: -</li>
-				<li class="col-sm-2" id="min-bet">Min Bet: -</li>
+				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100"></li>
+				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100"></li>
+				<li class="col-sm-2">Min Bet <input type="number" v-model="minBet" min="0" max="100"></li>
 			</ul>			
 
 		<h3>Player Info</h3>
 			
 			<ul class="row">
-				<li class="col-sm-3" id="bank">Bank: -</li>
-				<li class="col-sm-3" id="multiplier">Bet Multi: -</li>
-				<li class="col-sm-3" id="avg-return">Avg Profit: -</li>
-				<li class="col-sm-3" id="max-safe-bets">Safe Bets: -</li>
-				<li class="col-sm-3" id="max-safe-bets-odds">Safe Bets Odds: -</li>
-				<li class="col-sm-3" id="bet">Bet Amount: -</li>
-				<li class="col-sm-3" id="investment">Investment: -</li>
-				<li class="col-sm-3" id="highestBet">Highest Bet: -</li>
+				<li class="col-sm-3">Bank: {{ bank }}</li>
+				<li class="col-sm-3">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
+				<li class="col-sm-3">Avg Profit: {{ ((bank - 100) / round).toFixed(2) }}</li>
+				<li class="col-sm-3">Safe Bets: {{ safeBetCount }}</li>
+				<li class="col-sm-3">Bust Odds: {{ safeBetOdds }}</li>
+				<li class="col-sm-3">Bet: {{ bet.toFixed(2) }} (Payout: {{ (bet * payout).toFixed(2) }})</li>
+				<li class="col-sm-3">Investment: {{ investment }}</li>
+				<li class="col-sm-3">Highest Bet: {{ highestBet }}</li>
 			</ul>
 
 		<div id="buttons">
 
-			<div class="row">
-				<input type="number" placeholder="Roll Count" id="rollRate">
-				<input type="number" placeholder="Payout Rate" id="payoutRate">
-				<input type="number" placeholder="Win %" id="winOdds">
-			</div>
-
-			<div class="row">
-				<button onclick="casino.gameLoop()" id="rollRate">Roll 1x</button>
-				<button onclick="gameDisplay.resetAll()">Reset</button>
-			</div>
+			<input type="number" placeholder="Roll Count" v-model="rollRate">
+			<button v-on:click="gameLoop">Roll {{ rollRate }}x</button>
 			
 		</div>
-
+	
 	</div><!-- wrapper -->
+	
+	<script type="text/javascript">
+			
+		var casinoVue = new Vue({
+			el: '#wrapper',
 
+			data: {
+				// Casino
+				round: 1,
+				payout: 2,
+				winOdds: 30,
+				minBet: 1,
+
+				// Player
+				avgProfit: 5,
+				bankHistory: [],
+				bank: 100,
+				bet: 1,
+				betMulti: 1.5,
+				highestBet: 1,
+				investment: 0,
+				rollRate: 100,
+				safeBetCount: 1,
+				safeBetOdds: 0
+			},
+
+			methods: {
+				getSafeBets() {
+					var max = 0;
+					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
+					return max;
+				},
+
+				getSafeBetOdds() {
+					return (Math.pow((100 - this.winOdds) / 100, this.getSafeBets()) * 100).toFixed(6);
+				},
+
+				win() {
+					this.bankHistory.push(this.bank);
+					this.bet = this.minBet;
+					this.investment = this.bet;
+				},
+
+				lose() {
+					this.bank -= this.bet;
+					this.bankHistory.push(this.bank);
+
+					this.bet *= this.betMulti;
+					this.investment += this.bet;
+
+					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
+				},
+
+				pay() {
+					this.bank += this.bet * this.payout;
+				},
+
+				roll() {
+					return Math.random() * 100;
+				},
+
+				game() {
+					if(this.roll() >= this.winOdds) {
+						this.lose();
+						return;			
+					}
+					
+					this.pay();
+
+					this.win();
+
+					this.round++;
+				},
+
+				gameLoop() {
+					for (var i = 0; i < this.rollRate; i++) { this.game(); }
+
+					this.updateGraph();
+				},
+
+				updateGraph() {
+					new Chart(
+						document.querySelector("#graph").getContext('2d'), 
+						{
+							type: 'line',
+							data: {
+								labels: this.bankHistory,
+								datasets: [{
+									label: "Player Bank",
+									borderColor: "#4B5",
+									backgroundColor: "rgba(136, 186, 153, .25)",
+									data: this.bankHistory
+								}]
+							}
+						}
+					);
+				}
+			}
+		});
+
+	</script>
 </body>
 </html>
