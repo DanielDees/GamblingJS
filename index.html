@@ -25,17 +25,17 @@
 <body>
 	<div id="wrapper">
 
-		<h1>Casino JS</h1>
-		
 		<canvas id="graph"></canvas>
 
+		<h1>Casino JS</h1>
+		
 		<h2 id="round">Round: {{ round }}</h2>
 
 		<h3>Casino Info</h3>
 
 			<ul class="row">
 				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100" step="0.1"></li>
-				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100" step="0.01"></li>
+				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="1" step="0.01"></li>
 				<li class="col-sm-2">Min Bet <input type="number" v-model="minBet" min="0" max="100"></li>
 			</ul>			
 
@@ -62,10 +62,9 @@
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript">
-			
-		var casinoVue = new Vue({
+		
+		var casino = new Vue({
 			el: '#wrapper',
-
 			data: {
 				// Casino
 				round: 1,
@@ -82,94 +81,82 @@
 				investment: 0,
 				rollRate: 100
 			},
-
 			computed: {
 				safeBetCount() {
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 					return max;
 				},
-
 				safeBetOdds() {
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 
-					return (Math.pow(1 - this.winOdds, max) * 100).toFixed(6) + "%";
-				},
+					var odds = (Math.pow(1 - this.winOdds, max) * 100);
 
+					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(6) + "%)";
+				},
 				winPayout() {
 					return "(Payout: " + (this.bet * this.payout).toFixed(2) + ")";
 				},
-
 				avgProfit() {
 					return ((this.bank - 100) / this.round).toFixed(2);
 				}
-
 			},
-
 			methods: {
 				win() {
-					this.bankHistory.push(this.bank);
+					this.bank += this.bet * this.payout;
 					this.bet = this.minBet;
-					this.investment = this.bet;
+					this.investment = 0;
+					this.round++;
 				},
-
 				lose() {
 					this.bank -= this.bet;
-					this.bankHistory.push(this.bank);
-
 					this.bet *= this.betMulti;
 					this.investment += this.bet;
 
 					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
 				},
-
-				pay() {
-					this.bank += this.bet * this.payout;
-				},
-
 				roll() {
 					return Math.random();
 				},
-
 				game() {
-					if(this.roll() >= this.winOdds) {
+					if (this.roll() >= this.winOdds) {
 						this.lose();
+						this.updateChart();
+
 						return;			
 					}
-					
-					this.pay();
 
 					this.win();
-
-					this.round++;
+					this.updateChart();
 				},
-
 				gameLoop() {
 					for (var i = 0; i < this.rollRate; i++) { this.game(); }
 
-					this.updateGraph();
+					chart.update(0);
 				},
-
-				updateGraph() {
-					new Chart(
-						document.querySelector("#graph").getContext('2d'), 
-						{
-							type: 'line',
-							data: {
-								labels: this.bankHistory,
-								datasets: [{
-									label: "Player Bank",
-									borderColor: "#4B5",
-									backgroundColor: "rgba(136, 186, 153, .25)",
-									data: this.bankHistory
-								}]
-							}
-						}
-					);
+				updateChart() {
+					chart.data.labels.push("Round " + this.round);
+					chart.data.datasets.forEach((dataset) => dataset.data.push(this.bank));
 				}
 			}
 		});
+
+		var chart = new Chart(
+			$("#graph")[0].getContext('2d'), 
+			{
+				type: 'line',
+				data: {
+					labels: [],
+					datasets: [{
+						label: "Player Bank",
+						borderColor: "#4B5",
+						backgroundColor: "rgba(136, 186, 153, .25)",
+						data: []
+					}]
+				}
+			}
+		);
 
 	</script>
 </body>
