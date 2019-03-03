@@ -42,22 +42,18 @@
 		<h3>Player Info</h3>
 			
 			<ul class="row">
-				<li class="col-sm-3">Bank: {{ bank }}</li>
-				<li class="col-sm-3">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
-				<li class="col-sm-3">Avg Profit: {{ avgProfit }}</li>
-				<li class="col-sm-3">Safe Bets: {{ safeBetCount }}</li>
-				<li class="col-sm-3">Bust Odds: {{ safeBetOdds }}</li>
-				<li class="col-sm-3">Bet: {{ bet.toFixed(2) }} {{ winPayout }}</li>
-				<li class="col-sm-3">Investment: {{ investment }}</li>
-				<li class="col-sm-3">Highest Bet: {{ highestBet }}</li>
+				<li class="col-sm-4">Bank: {{ bank }}</li>
+				<li class="col-sm-4">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
+				<li class="col-sm-4">Avg Profit: {{ avgProfit }}</li>
+				<li class="col-sm-4">Safe Bets: {{ safeBetCount }}</li>
+				<li class="col-sm-4">Bust Odds: {{ safeBetOdds }}</li>
+				<li class="col-sm-4">Bet: {{ bet.toFixed(2) }} {{ winPayout }}</li>
+				<li class="col-sm-4">Investment: {{ investment }}</li>
+				<li class="col-sm-4">Highest Bet: {{ highestBet }}</li>
 			</ul>
 
-		<div id="buttons">
-
-			<input type="number" placeholder="Roll Count" v-model="rollRate">
+			<input type="number" placeholder="Roll Count" v-model="rollRate" min="0" max="100000">
 			<button v-on:click="gameLoop">Roll {{ rollRate }}x</button>
-			
-		</div>
 	
 	</div><!-- wrapper -->
 	
@@ -79,7 +75,7 @@
 				betMulti: 1.5,
 				highestBet: 1,
 				investment: 0,
-				rollRate: 100
+				rollRate: 1
 			},
 			computed: {
 				safeBetCount() {
@@ -113,7 +109,6 @@
 					this.bank -= this.bet;
 					this.bet *= this.betMulti;
 					this.investment += this.bet;
-
 					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
 				},
 				roll() {
@@ -123,7 +118,6 @@
 					if (this.roll() >= this.winOdds) {
 						this.lose();
 						this.updateChart();
-
 						return;			
 					}
 
