@@ -34,8 +34,8 @@
 		<h3>Casino Info</h3>
 
 			<ul class="row">
-				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100"></li>
-				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100"></li>
+				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100" step="0.1"></li>
+				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100" step="0.01"></li>
 				<li class="col-sm-2">Min Bet <input type="number" v-model="minBet" min="0" max="100"></li>
 			</ul>			
 
@@ -44,10 +44,10 @@
 			<ul class="row">
 				<li class="col-sm-3">Bank: {{ bank }}</li>
 				<li class="col-sm-3">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
-				<li class="col-sm-3">Avg Profit: {{ ((bank - 100) / round).toFixed(2) }}</li>
+				<li class="col-sm-3">Avg Profit: {{ avgProfit }}</li>
 				<li class="col-sm-3">Safe Bets: {{ safeBetCount }}</li>
 				<li class="col-sm-3">Bust Odds: {{ safeBetOdds }}</li>
-				<li class="col-sm-3">Bet: {{ bet.toFixed(2) }} (Payout: {{ (bet * payout).toFixed(2) }})</li>
+				<li class="col-sm-3">Bet: {{ bet.toFixed(2) }} {{ winPayout }}</li>
 				<li class="col-sm-3">Investment: {{ investment }}</li>
 				<li class="col-sm-3">Highest Bet: {{ highestBet }}</li>
 			</ul>
@@ -70,33 +70,44 @@
 				// Casino
 				round: 1,
 				payout: 2,
-				winOdds: 30,
+				winOdds: 0.3,
 				minBet: 1,
 
 				// Player
-				avgProfit: 5,
 				bankHistory: [],
 				bank: 100,
 				bet: 1,
 				betMulti: 1.5,
 				highestBet: 1,
 				investment: 0,
-				rollRate: 100,
-				safeBetCount: 1,
-				safeBetOdds: 0
+				rollRate: 100
 			},
 
-			methods: {
-				getSafeBets() {
+			computed: {
+				safeBetCount() {
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 					return max;
 				},
 
-				getSafeBetOdds() {
-					return (Math.pow((100 - this.winOdds) / 100, this.getSafeBets()) * 100).toFixed(6);
+				safeBetOdds() {
+					var max = 0;
+					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
+
+					return (Math.pow(1 - this.winOdds, max) * 100).toFixed(6) + "%";
 				},
 
+				winPayout() {
+					return "(Payout: " + (this.bet * this.payout).toFixed(2) + ")";
+				},
+
+				avgProfit() {
+					return ((this.bank - 100) / this.round).toFixed(2);
+				}
+
+			},
+
+			methods: {
 				win() {
 					this.bankHistory.push(this.bank);
 					this.bet = this.minBet;
@@ -118,7 +129,7 @@
 				},
 
 				roll() {
-					return Math.random() * 100;
+					return Math.random();
 				},
 
 				game() {
