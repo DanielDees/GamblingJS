@@ -71,13 +71,17 @@
 				// Player
 				bankHistory: [],
 				bank: 100,
-				bet: 1,
+				currentBet: 1,
 				betMulti: 1.5,
 				highestBet: 1,
 				investment: 0,
 				rollRate: 1
 			},
 			computed: {
+				bet() {
+					this.currentBet = Math.max(this.minBet, this.currentBet);
+					return this.currentBet;
+				},
 				safeBetCount() {
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
@@ -101,13 +105,13 @@
 			methods: {
 				win() {
 					this.bank += this.bet * this.payout;
-					this.bet = this.minBet;
+					this.currentBet = this.minBet;
 					this.investment = 0;
 					this.round++;
 				},
 				lose() {
 					this.bank -= this.bet;
-					this.bet *= this.betMulti;
+					this.currentBet *= this.betMulti;
 					this.investment += this.bet;
 					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
 				},
