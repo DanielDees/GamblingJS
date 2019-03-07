@@ -98,7 +98,8 @@ var casino = new Vue({
 				},
 				updateChart() {
 					chart.data.labels.push("Round " + this.round);
-					chart.data.datasets.forEach((dataset) => dataset.data.push(this.bank));
+					chart.data.datasets[0].data.push(this.bank);
+					chart.data.datasets[1].data.push(this.takeHome);
 				}
 			}
 		});
