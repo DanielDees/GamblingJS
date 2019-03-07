@@ -4,7 +4,7 @@ var casino = new Vue({
 				// Casino
 				round: 1,
 				payout: 2,
-				winOdds: 0.3,
+				winOdds: 0.3158,
 				minBet: 1,
 
 				// Player
