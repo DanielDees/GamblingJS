@@ -44,6 +44,9 @@ var casino = new Vue({
 				},
 				avgProfit() {
 					return ((this.bank + this.takeHome) / this.round).toFixed(2);
+				},
+				autoRollRate() {
+					return 2000 / this.rollRate;
 				}
 			},
 			methods: {
@@ -101,7 +104,7 @@ var casino = new Vue({
 				autoRoll() {
 					this.game();
 
-					chart.update({ duration: 2000 / this.rollRate });
+					chart.update({ duration: this.autoRollRate * 4 });
 				},
 				updateChart() {
 					chart.data.labels.push("Round " + this.round);
