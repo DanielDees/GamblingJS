@@ -8,22 +8,24 @@ var casino = new Vue({
 				minBet: 1,
 
 				// Player
-				bankHistory: [],
-				bank: 100,
-				maxBank: 100,
+				maxHistoryLength: 200,
+				startingBank: 500,
+				bank: 500,
+				maxBank: 1000,
 				safeBetLimit: 1,
 				takeHome: 0,
-				currentBet: 1,
-				betMulti: 1.5,
-				highestBet: 1,
+				currentBet: 0,
+				betMulti: 1.6,
+				highestBet: 0,
 				investment: 0,
-				rollRate: 1
+				rollRate: 20
 			},
 			computed: {
 				bet() {
 					this.currentBet = Math.max(this.minBet, this.currentBet);
 					return this.currentBet;
 				},
+				//Modify to calculate directly without using while loop to prevent infinite loops on <1.0 multi
 				safeBetCount() {
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
@@ -65,7 +67,7 @@ var casino = new Vue({
 					this.investment += this.bet;
 					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
 					
-					if (this.bank <= 0) {
+					if (this.bank <= 0 && this.takeHome > 0) {
 
 						var replenishAmount = (this.maxBank - this.bank);
 
@@ -76,6 +78,11 @@ var casino = new Vue({
 						this.bank += replenishAmount;
 						this.takeHome -= replenishAmount;
 						this.currentBet = this.minBet;
+						return;
+					}
+					if (this.bank <= 0 && this.takeHome <= 0) {
+						this.resetAll();
+						return;
 					}
 				},
 				roll() {
@@ -91,15 +98,33 @@ var casino = new Vue({
 					this.win();
 					this.updateChart();
 				},
-				gameLoop() {
-					for (var i = 0; i < this.rollRate; i++) { this.game(); }
+				autoRoll() {
+					this.game();
 
-					chart.update();
+					chart.update({ duration: 2000 / this.rollRate });
 				},
 				updateChart() {
 					chart.data.labels.push("Round " + this.round);
 					chart.data.datasets[0].data.push(this.bank);
 					chart.data.datasets[1].data.push(this.takeHome);
+
+					if (chart.data.datasets[0].data.length > this.maxHistoryLength) {
+						chart.data.datasets[0].data.shift();
+						chart.data.datasets[1].data.shift();
+						chart.data.labels.shift();
+					}
+				},
+				resetAll() {
+					chart.data.labels = [];
+					chart.data.datasets[0].data = [];
+					chart.data.datasets[1].data = [];
+
+					this.bank = this.startingBank;
+					this.bet = this.minBet;
+					this.takeHome = 0;
+					this.highestBet = 0;
+					this.investment = 0;
+					this.round = 0;
 				}
 			}
 		});
