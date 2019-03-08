@@ -120,7 +120,7 @@ var casino = new Vue({
 					chart.data.datasets[1].data = [];
 
 					this.bank = this.startingBank;
-					this.bet = this.minBet;
+					this.currentBet = this.minBet;
 					this.takeHome = 0;
 					this.highestBet = 0;
 					this.investment = 0;
