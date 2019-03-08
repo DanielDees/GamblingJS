@@ -43,7 +43,7 @@ var casino = new Vue({
 					return "(Payout: " + (this.bet * this.payout).toFixed(2) + ")";
 				},
 				avgProfit() {
-					return ((this.bank - 100) / this.round).toFixed(2);
+					return ((this.bank + this.takeHome) / this.round).toFixed(2);
 				}
 			},
 			methods: {
