@@ -29,7 +29,7 @@
 
 		<h1>Casino JS</h1>
 		
-		<h2 id="round">Round: {{ round }}</h2>
+		<h2 id="round">Wins: {{ wins }} | Rolls: {{ totalRolls }}</h2>
 
 		<h3>Casino Info</h3>
 
@@ -53,10 +53,10 @@
 				<li class="col-sm-4">Bust Odds: {{ safeBetOdds }}</li>
 				<li class="col-sm-4">Bet: {{ bet.toFixed(2) }} {{ winPayout }}</li>
 				<li class="col-sm-4">Investment: {{ investment.toFixed(2) }}</li>
-				<li class="col-sm-4">Highest Bet: {{ highestBet }}</li>
+				<li class="col-sm-4">Highest Bet: {{ highestBet.toFixed(2) }}</li>
 			</ul>
 			
-			<button v-on:click="resetAll">Reset</button>
+			<button v-on:click="manualReset">Reset</button>
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
