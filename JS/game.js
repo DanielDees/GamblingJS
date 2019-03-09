@@ -144,6 +144,7 @@ var casino = new Vue({
 					this.highestBet = 0;
 					this.investment = 0;
 					this.wins = 0;
+					this.totalRolls = 0;
 					return true;
 				},
 				manualReset() {
