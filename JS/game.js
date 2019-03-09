@@ -94,11 +94,10 @@ var casino = new Vue({
 				lose() {
 					chart.data.labels.push("Loss Bet: " + this.current_bet.toFixed(0));
 
-					while (this.bank < this.min_bet) {
-						var replenish = Math.min(this.max_bank);
-
-						this.bank += replenish;
-						this.take_home -= replenish;
+					if (this.bank < this.min_bet) {
+						var refill = this.start_bank - this.bank;
+						this.bank += refill;
+						this.take_home -= refill;
 						this.current_bet = this.min_bet;
 					}
 
