@@ -4,7 +4,7 @@ var casino = new Vue({
 				// Casino
 				round: 1,
 				payout: 2,
-				winOdds: 0.3158,
+				winOdds: 31.58,
 				minBet: 1,
 
 				// Player
@@ -39,11 +39,11 @@ var casino = new Vue({
 					if (this.betMulti <= 1) {
 						return;
 					}
-					
+
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 
-					var odds = (Math.pow(1 - this.winOdds, max) * 100);
+					var odds = (Math.pow(1 - (this.winOdds / 100), max) * 100);
 
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(6) + "%)";
 				},
@@ -76,29 +76,34 @@ var casino = new Vue({
 				lose() {
 					this.bank -= this.bet;
 					this.currentBet *= this.betMulti;
+
+					//Prevent going into debt
+					if (this.currentBet > this.bank) {
+						this.currentBet = this.bank;
+					}
+
 					this.investment += this.bet;
 					this.highestBet = Math.max(this.bet, this.highestBet).toFixed(2);
 					
-					if (this.bank <= 0 && this.takeHome > 0) {
+					if (this.bank <= 0 && this.takeHome > 0 || this.currentBet == 0) {
 
-						var replenishAmount = (this.maxBank - this.bank);
-
-						if (replenishAmount > this.takeHome) {
-							replenishAmount = this.takeHome;
+						if (this.currentBet > this.takeHome) {
+							this.currentBet = this.takeHome;
 						}
 
-						this.bank += replenishAmount;
-						this.takeHome -= replenishAmount;
+						this.bank += this.currentBet;
+						this.takeHome -= this.currentBet;
 						this.currentBet = this.minBet;
 						return;
 					}
+
 					if (this.bank <= 0 && this.takeHome <= 0) {
 						this.resetAll();
 						return;
 					}
 				},
 				roll() {
-					return Math.random();
+					return Math.random() * 100;
 				},
 				game() {
 					if (this.roll() >= this.winOdds) {
@@ -131,9 +136,9 @@ var casino = new Vue({
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
 
-					this.bank = this.startingBank;
 					this.currentBet = this.minBet;
 					this.takeHome = 0;
+					this.bank = this.startingBank;
 					this.highestBet = 0;
 					this.investment = 0;
 					this.round = 0;

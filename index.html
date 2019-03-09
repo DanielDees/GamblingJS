@@ -35,7 +35,7 @@
 
 			<ul class="row">
 				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100" step="0.1"></li>
-				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="1" step="0.01"></li>
+				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100.0" step="0.1"></li>
 				<li class="col-sm-2">Min Bet <input type="number" v-model="minBet" min="0" max="100"></li>
 			</ul>			
 
@@ -55,7 +55,8 @@
 				<li class="col-sm-4">Investment: {{ investment.toFixed(2) }}</li>
 				<li class="col-sm-4">Highest Bet: {{ highestBet }}</li>
 			</ul>
-	
+			
+			<button v-on:click="resetAll">Reset</button>
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
