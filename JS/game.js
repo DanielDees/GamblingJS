@@ -27,11 +27,19 @@ var casino = new Vue({
 				},
 				//Modify to calculate directly without using while loop to prevent infinite loops on <1.0 multi
 				safeBetCount() {
+					if (this.betMulti <= 1) {
+						return;
+					}
+
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 					return max;
 				},
 				safeBetOdds() {
+					if (this.betMulti <= 1) {
+						return;
+					}
+					
 					var max = 0;
 					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
 
@@ -46,7 +54,8 @@ var casino = new Vue({
 					return ((this.bank + this.takeHome) / this.round).toFixed(2);
 				},
 				autoRollRate() {
-					return 2000 / this.rollRate;
+					//Set delay to 32 bit int max if rate is 0. (~24.8 days)
+					return this.rollRate > 0 ? 2000 / this.rollRate : 2147483647;
 				}
 			},
 			methods: {
