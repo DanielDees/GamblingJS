@@ -55,6 +55,8 @@
 						<li class="list-group-item">Rolls: {{ total_rolls }}</li>
 						<li class="list-group-item">Win Rate: {{ winRate.toFixed(2) }}%</li>
 						<li class="list-group-item">Avg Profit: {{ avgProfit }}</li>
+						<li class="list-group-item">Highest Bet: {{ highest_bet.toFixed(2) }}</li>
+						<li class="list-group-item">Highest Payout: {{ highest_payout.toFixed(2) }}</li>
 					</ul>
 				</div>
 			</div>
@@ -75,12 +77,11 @@
 					
 					<ul class="list-group list-group-flush">
 						<li class="list-group-item">Bank: {{ bank.toFixed(2) }}</li>
-						<li class="list-group-item">TakeHome: {{ take_home.toFixed(2) }}</li>
+						<li class="list-group-item">Take Home: {{ take_home.toFixed(2) }}</li>
 						<li class="list-group-item">Safe Bets: {{ safeBetCount }}</li>
 						<li class="list-group-item">Bust Odds: {{ safeBetOdds }}</li>
 						<li class="list-group-item">Bet: {{ current_bet.toFixed(2) }} (Payout: {{ payout.toFixed(2) }})</li>
 						<li class="list-group-item">Investment: {{ investment.toFixed(2) }}</li>
-						<li class="list-group-item">Highest Bet: {{ highest_bet.toFixed(2) }}</li>
 					</ul>
 				</div>
 			</div>
@@ -106,21 +107,18 @@
 						pointHoverRadius: 16,
 						pointBorderColor: [],
 						pointBackgroundColor: [],
-						//backgroundColor: "rgba(136, 186, 153, .25)",
 						data: []
 					},
 					{
 						label: "Take Home",
 						borderColor: "#58B",
 						pointRadius: 0,
-						//backgroundColor: "rgba(95, 155, 183, .25)",
 						data: []
 					},
 					{
 						label: "Net Profit",
 						borderColor: "#BB3",
 						pointRadius: 0,
-						//backgroundColor: "rgba(95, 155, 183, .25)",
 						data: []
 					}]
 				},

@@ -21,6 +21,7 @@ var casino = new Vue({
 				bet_multi: 3,
 				current_bet: 0,
 				highest_bet: 0,
+				highest_payout: 0,
 				investment: 0
 			},
 			computed: {
@@ -44,7 +45,7 @@ var casino = new Vue({
 
 					var odds = Math.pow(1 - (this.win_odds / 100), max) * 100;
 
-					return "~1/" + (100 / odds.toFixed(6)).toFixed(0) + " (" + odds.toFixed(6) + "%)";
+					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(4) + "%)";
 				},
 				payout() {
 					return this.current_bet + (this.current_bet * this.payout_rate);
@@ -76,6 +77,7 @@ var casino = new Vue({
 					chart.data.labels.push("Win Bet: " + this.current_bet.toFixed(0));
 
 					this.bank += this.payout;
+					this.highest_payout = Math.max(this.payout, this.highest_payout);
 
 					var overflow = Math.max(this.bank - this.max_bank, 0);
 
@@ -97,7 +99,7 @@ var casino = new Vue({
 
 						this.bank += replenish;
 						this.take_home -= replenish;
-						this.current_bet = 0;
+						this.current_bet = this.min_bet;
 					}
 
 					chart.data.datasets[0].pointBorderColor.push("#B22");
@@ -147,7 +149,7 @@ var casino = new Vue({
 					chart.data.datasets[0].pointBorderColor = [];
 					chart.data.datasets[0].pointBackgroundColor = [];
 
-					this.current_bet = 0;
+					this.current_bet = this.min_bet;
 					this.take_home = 0;
 					this.bank = this.start_bank;
 					this.highest_bet = 0;
