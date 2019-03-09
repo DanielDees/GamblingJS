@@ -44,7 +44,7 @@ var casino = new Vue({
 
 					var odds = Math.pow(1 - (this.win_odds / 100), max) * 100;
 
-					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(6) + "%)";
+					return "~1/" + (100 / odds.toFixed(6)).toFixed(0) + " (" + odds.toFixed(6) + "%)";
 				},
 				payout() {
 					return this.current_bet + (this.current_bet * this.payout_rate);
@@ -91,10 +91,6 @@ var casino = new Vue({
 				},
 				lose() {
 					chart.data.labels.push("Loss Bet: " + this.current_bet.toFixed(0));
-
-					//if (this.reset()) {
-					//	return;
-					//}
 
 					while (this.bank < this.min_bet) {
 						var replenish = Math.min(this.max_bank);
