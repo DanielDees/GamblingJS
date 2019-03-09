@@ -10,21 +10,20 @@ var casino = new Vue({
 
 				// Player
 				maxHistoryLength: 200,
-				startingBank: 500,
-				bank: 500,
-				maxBank: 1000,
+				startingBank: 41,
+				bank: 41,
+				maxBank: 41,
 				safeBetLimit: 1,
 				takeHome: 0,
 				currentBet: 0,
-				betMulti: 1.6,
+				betMulti: 3,
 				highestBet: 0,
 				investment: 0,
 				rollRate: 20
 			},
 			computed: {
 				bet() {
-					var min = Math.max(this.minBet, this.currentBet);
-					var max = Math.min(min, this.bank);
+					var max = Math.max(this.minBet, this.currentBet);
 
 					this.currentBet = max;
 					this.investment += max;
@@ -87,7 +86,7 @@ var casino = new Vue({
 						return;
 					}
 
-					if (this.bank <= 0) {
+					if (this.bank < this.minBet) {
 						var replenish = Math.min(this.maxBank, this.takeHome);
 
 						this.bank = replenish;
@@ -111,7 +110,7 @@ var casino = new Vue({
 					this.roll();
 					this.updateChart();
 				},
-				updateChart(label) {
+				updateChart() {
 					chart.data.labels.push("Win " + this.wins);
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.takeHome);
@@ -126,7 +125,7 @@ var casino = new Vue({
 				},
 				reset(manual) {
 
-					if ((this.bank > 0 || this.takeHome > 0) && !manual) {
+					if ((this.bank >= this.minBet || this.takeHome > 0) && !manual) {
 						return false;
 					}
 
