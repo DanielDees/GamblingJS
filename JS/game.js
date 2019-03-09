@@ -13,12 +13,12 @@ var casino = new Vue({
 				// Player
 				wins: 0,
 				total_rolls: 0,
-				start_bank: 500,
-				max_bank: 1000,
-				bank: 500,
+				start_bank: 40,
+				max_bank: 40,
+				bank: 0,
 				//safe_bet_limit: 1,
 				take_home: 0,
-				bet_multi: 1.7,
+				bet_multi: 3,
 				current_bet: 0,
 				highest_bet: 0,
 				investment: 0
@@ -73,6 +73,8 @@ var casino = new Vue({
 					this.highest_bet = Math.max(this.current_bet, this.highest_bet);
 				},
 				win() {
+					chart.data.labels.push("Win Bet: " + this.current_bet.toFixed(0));
+
 					this.bank += this.payout;
 
 					var overflow = Math.max(this.bank - this.max_bank, 0);
@@ -84,17 +86,18 @@ var casino = new Vue({
 					this.investment = 0;
 					this.wins++;
 
-
 					chart.data.datasets[0].pointBorderColor.push("#4B5");
 					chart.data.datasets[0].pointBackgroundColor.push("#4B5");
 				},
 				lose() {
-					if (this.reset()) {
-						return;
-					}
+					chart.data.labels.push("Loss Bet: " + this.current_bet.toFixed(0));
+
+					//if (this.reset()) {
+					//	return;
+					//}
 
 					while (this.bank < this.min_bet) {
-						var replenish = Math.min(this.max_bank, this.take_home);
+						var replenish = Math.min(this.max_bank);
 
 						this.bank += replenish;
 						this.take_home -= replenish;
@@ -120,13 +123,14 @@ var casino = new Vue({
 					this.updateChart();
 				},
 				updateChart() {
-					chart.data.labels.push("Bet: " + this.current_bet.toFixed(0));
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.take_home);
+					chart.data.datasets[2].data.push((this.bank + this.take_home).toFixed(2));
 
 					while (chart.data.datasets[0].data.length > this.history) {
 						chart.data.datasets[0].data.shift();
 						chart.data.datasets[1].data.shift();
+						chart.data.datasets[2].data.shift();
 						chart.data.datasets[0].pointBorderColor.shift();
 						chart.data.datasets[0].pointBackgroundColor.shift();
 						chart.data.labels.shift();
@@ -143,6 +147,7 @@ var casino = new Vue({
 					chart.data.labels = [];
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
+					chart.data.datasets[2].data = [];
 					chart.data.datasets[0].pointBorderColor = [];
 					chart.data.datasets[0].pointBackgroundColor = [];
 
