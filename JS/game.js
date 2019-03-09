@@ -98,26 +98,20 @@ var casino = new Vue({
 					this.currentBet *= this.betMulti;
 				},
 				roll() {
-					return Math.random() * 100;
-				},
-				game() {
 					this.totalRolls++;
-					
-					if (this.roll() >= this.winOdds) {
+
+					if (Math.random() * 100 >= this.winOdds) {
 						this.lose();
-						this.updateChart();
-						return;			
+						return;
 					}
 
 					this.win();
+				},
+				playRound() {
+					this.roll();
 					this.updateChart();
 				},
-				autoRoll() {
-					this.game();
-
-					chart.update({ duration: this.autoRollRate * 4 });
-				},
-				updateChart() {
+				updateChart(label) {
 					chart.data.labels.push("Win " + this.wins);
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.takeHome);
@@ -127,6 +121,8 @@ var casino = new Vue({
 						chart.data.datasets[1].data.shift();
 						chart.data.labels.shift();
 					}
+
+					chart.update({ duration: this.autoRollRate * 4 });
 				},
 				reset(manual) {
 

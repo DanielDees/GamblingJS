@@ -46,7 +46,7 @@
 				<li class="col-sm-4">TakeHome: {{ takeHome.toFixed(2) }}</li>
 				<li class="col-sm-4">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
 				<li class="col-sm-4">MaxBank: <input type="number" v-model="maxBank" min="10" step="10"></li>
-				<li class="col-sm-4">Start Bank: <input type="number" v-model="startingBank" min="10" step="5"></li>
+				<li class="col-sm-4">Start Bank: <input type="number" v-model.number="startingBank" min="10" step="5"></li>
 				<li class="col-sm-4">Roll Rate: <input type="number" v-model="rollRate" min="0" max="1000" step="1"></li>
 				<li class="col-sm-4">Avg Profit: {{ avgProfit }}</li>
 				<li class="col-sm-4">Safe Bets: {{ safeBetCount }}</li>
@@ -86,7 +86,7 @@
 		);
 
 		function runTimer() {
-			casino.autoRoll();
+			casino.playRound();
 			timer = setTimeout(runTimer, casino.autoRollRate);
 		}
 
