@@ -29,31 +29,33 @@
 
 		<h1>Casino JS</h1>
 		
-		<h2 id="round">Wins: {{ wins }} | Rolls: {{ totalRolls }}</h2>
+		<h2 id="round">Wins: {{ wins }} | Rolls: {{ total_rolls }} | Win Rate: {{ winRate.toFixed(1) }}%</h2>
 
 		<h3>Casino Info</h3>
 
 			<ul class="row">
-				<li class="col-sm-2">Payout <input type="number" v-model="payout" min="0" max="100" step="0.1"></li>
-				<li class="col-sm-2">Win% <input type="number" v-model="winOdds" min="0" max="100.0" step="0.1"></li>
-				<li class="col-sm-2">Min Bet <input type="number" v-model="minBet" min="0" max="100"></li>
+				<li class="col-sm-2">Payout <input type="number" v-model.number="payout_rate" min="0" max="100" step="0.1"></li>
+				<li class="col-sm-2">Win% <input type="number" v-model.number="win_odds" min="0" max="100.0" step="0.1"></li>
+				<li class="col-sm-2">Min Bet <input type="number" v-model.number="min_bet" min="0" max="100"></li>
 			</ul>			
 
 		<h3>Player Info</h3>
 			
 			<ul class="row">
 				<li class="col-sm-4">Bank: {{ bank.toFixed(2) }}</li>
-				<li class="col-sm-4">TakeHome: {{ takeHome.toFixed(2) }}</li>
-				<li class="col-sm-4">Bet Multi: <input type="number" v-model="betMulti" min="0" max="10.0" step="0.1"></li>
-				<li class="col-sm-4">MaxBank: <input type="number" v-model="maxBank" min="10" step="10"></li>
-				<li class="col-sm-4">Start Bank: <input type="number" v-model.number="startingBank" min="10" step="5"></li>
-				<li class="col-sm-4">Roll Rate: <input type="number" v-model="rollRate" min="0" max="1000" step="1"></li>
+				<li class="col-sm-4">TakeHome: {{ take_home.toFixed(2) }}</li>
+				<li class="col-sm-4">Bet Multi: <input type="number" v-model.number="bet_multi" min="0" max="10.0" step="0.1"></li>
+				<li class="col-sm-4">MaxBank: <input type="number" v-model.number="max_bank" min="10" step="10"></li>
+				<li class="col-sm-4">Start Bank: <input type="number" v-model.number="start_bank" min="10" step="5"></li>
+				<li class="col-sm-4">Roll Rate: <input type="number" v-model.number="roll_rate" min="0" max="1000" step="1"></li>
+				<li class="col-sm-4">History: <input type="number" v-model.number="history" min="0" max="1000" step="1"></li>
 				<li class="col-sm-4">Avg Profit: {{ avgProfit }}</li>
 				<li class="col-sm-4">Safe Bets: {{ safeBetCount }}</li>
 				<li class="col-sm-4">Bust Odds: {{ safeBetOdds }}</li>
-				<li class="col-sm-4">Bet: {{ bet.toFixed(2) }} {{ winPayout }}</li>
+				<li class="col-sm-4">Bet: {{ current_bet.toFixed(2) }} (Payout: {{ payout.toFixed(2) }})</li>
 				<li class="col-sm-4">Investment: {{ investment.toFixed(2) }}</li>
-				<li class="col-sm-4">Highest Bet: {{ highestBet.toFixed(2) }}</li>
+				<li class="col-sm-4">Highest Bet: {{ highest_bet.toFixed(2) }}</li>
+
 			</ul>
 			
 			<button v-on:click="manualReset">Reset</button>
@@ -70,17 +72,35 @@
 					labels: [],
 					datasets: [
 					{
-						label: "Player Bank",
-						borderColor: "#4B5",
-						backgroundColor: "rgba(136, 186, 153, .25)",
+						label: "Bank",
+						borderColor: "#000",
+						pointRadius: 8,
+						pointHoverRadius: 16,
+						pointBorderColor: [],
+						pointBackgroundColor: [],
+						//backgroundColor: "rgba(136, 186, 153, .25)",
 						data: []
 					},
 					{
 						label: "Take Home",
 						borderColor: "#58B",
-						backgroundColor: "rgba(95, 155, 183, .25)",
+						pointRadius: 0,
+						//backgroundColor: "rgba(95, 155, 183, .25)",
 						data: []
 					}]
+				},
+				options: {
+					elements: {
+						line: {
+							tension: 0,
+						}
+					},
+					scales: {
+            			yAxes: [{
+            				beginAtZero: true,
+                			stacked: false
+            			}]
+        			}
 				}
 			}
 		);

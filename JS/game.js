@@ -1,105 +1,113 @@
 var casino = new Vue({
 			el: '#wrapper',
 			data: {
+				//Game Settings
+				history: 80,
+				roll_rate: 10,
+
 				// Casino
-				wins: 0,
-				totalRolls: 0,
-				payout: 2,
-				winOdds: 31.58,
-				minBet: 1,
+				payout_rate: 2,
+				win_odds: 31.58,
+				min_bet: 1,
 
 				// Player
-				maxHistoryLength: 200,
-				startingBank: 41,
-				bank: 41,
-				maxBank: 41,
-				safeBetLimit: 1,
-				takeHome: 0,
-				currentBet: 0,
-				betMulti: 3,
-				highestBet: 0,
-				investment: 0,
-				rollRate: 20
+				wins: 0,
+				total_rolls: 0,
+				start_bank: 500,
+				max_bank: 1000,
+				bank: 500,
+				//safe_bet_limit: 1,
+				take_home: 0,
+				bet_multi: 1.7,
+				current_bet: 0,
+				highest_bet: 0,
+				investment: 0
 			},
 			computed: {
-				bet() {
-					var max = Math.max(this.minBet, this.currentBet);
-
-					this.currentBet = max;
-					this.investment += max;
-					this.highestBet = Math.max(max, this.highestBet);
-
-					return this.currentBet;
-				},
-				//Modify to calculate directly without using while loop to prevent infinite loops on <1.0 multi
 				safeBetCount() {
-					if (this.betMulti <= 1) {
+					if (this.bet_multi <= 1) {
 						return;
 					}
 
 					var max = 0;
-					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
+					//@todo Edit to calculate without while loop
+					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
 					return max;
 				},
 				safeBetOdds() {
-					if (this.betMulti <= 1) {
+					if (this.bet_multi <= 1) {
 						return;
 					}
 
 					var max = 0;
-					while(this.bet * Math.pow(this.betMulti, max + 1) < this.bank) { max++; }
+					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
 
-					var odds = (Math.pow(1 - (this.winOdds / 100), max) * 100);
+					var odds = Math.pow(1 - (this.win_odds / 100), max) * 100;
 
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(6) + "%)";
 				},
-				winPayout() {
-					return "(Payout: " + (this.bet * this.payout).toFixed(2) + ")";
+				payout() {
+					return this.current_bet + (this.current_bet * this.payout_rate);
 				},
 				avgProfit() {
-					return ((this.bank + this.takeHome - this.startingBank) / this.wins).toFixed(2);
+					return ((this.bank + this.take_home - this.start_bank) / this.wins).toFixed(2);
 				},
 				autoRollRate() {
-					//Set delay to 32 bit int max if rate is 0. (~24.8 days)
-					return this.rollRate > 0 ? 1000 / this.rollRate : 2147483647;
+					return this.roll_rate > 0 ? 1000 / this.roll_rate : 2147483647 /* int32 max */;
+				},
+				winRate() {
+					return (this.wins / this.total_rolls) * 100;
 				}
 			},
 			methods: {
-				win() {
-					this.bank += this.bet * this.payout;
+				bet() {
+					this.current_bet = Math.max(this.min_bet, this.current_bet * this.bet_multi);
 
-					var overflow = (this.bank - this.maxBank);
-
-					if (overflow > 0) {
-						this.takeHome += overflow;
-						this.bank -= overflow;
+					//Don't bet more than you can spend in total
+					if (this.current_bet > this.bank) {
+						this.current_bet = this.bank;
 					}
 
-					this.currentBet = 0;
+					this.bank -= this.current_bet;
+					this.investment += this.current_bet;
+					this.highest_bet = Math.max(this.current_bet, this.highest_bet);
+				},
+				win() {
+					this.bank += this.payout;
+
+					var overflow = Math.max(this.bank - this.max_bank, 0);
+
+					this.take_home += overflow;
+					this.bank -= overflow;
+
+					this.current_bet = this.min_bet;
 					this.investment = 0;
 					this.wins++;
+
+
+					chart.data.datasets[0].pointBorderColor.push("#4B5");
+					chart.data.datasets[0].pointBackgroundColor.push("#4B5");
 				},
 				lose() {
-					this.bank -= this.bet;
-
 					if (this.reset()) {
 						return;
 					}
 
-					if (this.bank < this.minBet) {
-						var replenish = Math.min(this.maxBank, this.takeHome);
+					while (this.bank < this.min_bet) {
+						var replenish = Math.min(this.max_bank, this.take_home);
 
-						this.bank = replenish;
-						this.takeHome -= replenish;
-						this.currentBet = 0;
+						this.bank += replenish;
+						this.take_home -= replenish;
+						this.current_bet = 0;
 					}
 
-					this.currentBet *= this.betMulti;
+					chart.data.datasets[0].pointBorderColor.push("#B22");
+					chart.data.datasets[0].pointBackgroundColor.push("#B22");
 				},
 				roll() {
-					this.totalRolls++;
+					this.total_rolls++;
 
-					if (Math.random() * 100 >= this.winOdds) {
+					if (Math.random() * 100 >= this.win_odds) {
 						this.lose();
 						return;
 					}
@@ -107,39 +115,44 @@ var casino = new Vue({
 					this.win();
 				},
 				playRound() {
+					this.bet();
 					this.roll();
 					this.updateChart();
 				},
 				updateChart() {
-					chart.data.labels.push("Win " + this.wins);
+					chart.data.labels.push("Bet: " + this.current_bet.toFixed(0));
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
-					chart.data.datasets[1].data.push(this.takeHome);
+					chart.data.datasets[1].data.push(this.take_home);
 
-					if (chart.data.datasets[0].data.length > this.maxHistoryLength) {
+					while (chart.data.datasets[0].data.length > this.history) {
 						chart.data.datasets[0].data.shift();
 						chart.data.datasets[1].data.shift();
+						chart.data.datasets[0].pointBorderColor.shift();
+						chart.data.datasets[0].pointBackgroundColor.shift();
 						chart.data.labels.shift();
 					}
 
-					chart.update({ duration: this.autoRollRate * 4 });
+					chart.update({ duration: Math.min(this.autoRollRate * 2, 4000) });
 				},
 				reset(manual) {
 
-					if ((this.bank >= this.minBet || this.takeHome > 0) && !manual) {
+					if ((this.bank >= this.min_bet || this.take_home > 0) && !manual) {
 						return false;
 					}
 
 					chart.data.labels = [];
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
+					chart.data.datasets[0].pointBorderColor = [];
+					chart.data.datasets[0].pointBackgroundColor = [];
 
-					this.currentBet = 0;
-					this.takeHome = 0;
-					this.bank = this.startingBank;
-					this.highestBet = 0;
+					this.current_bet = 0;
+					this.take_home = 0;
+					this.bank = this.start_bank;
+					this.highest_bet = 0;
 					this.investment = 0;
 					this.wins = 0;
-					this.totalRolls = 0;
+					this.total_rolls = 0;
 					return true;
 				},
 				manualReset() {
