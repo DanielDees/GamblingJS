@@ -63,11 +63,7 @@ var casino = new Vue({
 			methods: {
 				bet() {
 					this.current_bet = Math.max(this.min_bet, this.current_bet * this.bet_multi);
-
-					//Don't bet more than you can spend in total
-					if (this.current_bet > this.bank) {
-						this.current_bet = this.bank;
-					}
+					this.current_bet = Math.min(this.current_bet, this.bank);
 
 					this.bank -= this.current_bet;
 					this.investment += this.current_bet;

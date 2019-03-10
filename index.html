@@ -16,8 +16,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 	<!-- VUE -->
-	<script src="https://cdn.jsdelivr.net/npm/vue"></script>
-	
+	<script src="JS/Vue/vue.js"></script>
+	<script src="JS/Vue/components.js"></script>
+
 	<!-- Chart.js -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 
@@ -28,66 +29,46 @@
 		<canvas id="graph"></canvas>
 		
 		<div class="row justify-content-center">
-			<div class="card bg-secondary" style="width: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title text-center">Settings</h5>
-					
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">History: <input type="number" v-model.number="history" min="0" max="1000" step="1"></li>
-						<li class="list-group-item">Roll Rate: <input type="number" v-model.number="roll_rate" min="0" max="1000" step="1"></li>
-						<li class="list-group-item">Start Bank: <input type="number" v-model.number="start_bank" min="10" max="100000" step="5"></li>
-						<li class="list-group-item">Max Bank: <input type="number" v-model.number="max_bank" min="10" max="100000" step="10"></li>
-						<li class="list-group-item">Bet Multi: <input type="number" v-model.number="bet_multi" min="0" max="10.0" step="0.1"></li>
-						<li class="list-group-item">
-							<div class="row justify-content-center">
-								<button v-on:click="manualReset">Restart</button>
-							</div>
-						</li>
-					</ul>
-				</div>
-			</div>
-			<div class="card bg-info" style="width: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title text-center">General Info</h5>
-					
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">Wins: {{ wins }}</li>
-						<li class="list-group-item">Rolls: {{ total_rolls }}</li>
-						<li class="list-group-item">Win Rate: {{ winRate.toFixed(2) }}%</li>
-						<li class="list-group-item">Avg Profit: {{ avgProfit }}</li>
-						<li class="list-group-item">Highest Bet: {{ highest_bet.toFixed(2) }}</li>
-						<li class="list-group-item">Highest Payout: {{ highest_payout.toFixed(2) }}</li>
-					</ul>
-				</div>
-			</div>
-			<div class="card bg-warning" style="width: 18rem;">
-				<div class="card-body ">
-					<h5 class="card-title text-center">Casino</h5>
-					
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">Payout <input type="number" v-model.number="payout_rate" min="0" max="100" step="0.1"></li>
-						<li class="list-group-item">Min Bet <input type="number" v-model.number="min_bet" min="0" max="100"></li>
-						<li class="list-group-item">Win% <input type="number" v-model.number="win_odds" min="0" max="100.0" step="0.1"></li>
-					</ul>
-				</div>
-			</div>
-			<div class="card bg-success" style="width: 18rem;">
-				<div class="card-body">
-					<h5 class="card-title text-center">Player</h5>
-					
-					<ul class="list-group list-group-flush">
-						<li class="list-group-item">Bank: {{ bank.toFixed(2) }}</li>
-						<li class="list-group-item">Take Home: {{ take_home.toFixed(2) }}</li>
-						<li class="list-group-item">Safe Bets: {{ safeBetCount }}</li>
-						<li class="list-group-item">Bust Odds: {{ safeBetOdds }}</li>
-						<li class="list-group-item">Bet: {{ current_bet.toFixed(2) }} (Payout: {{ payout.toFixed(2) }})</li>
-						<li class="list-group-item">Investment: {{ investment.toFixed(2) }}</li>
-					</ul>
-				</div>
-			</div>
+			<card title="Settings" class="bg-secondary">
+				<card-item>History: <input type="number" v-model.number="history" min="0" max="1000" step="1"></card-item>
+				<card-item>Roll Rate: <input type="number" v-model.number="roll_rate" min="0" max="1000" step="1"></card-item>
+				<card-item>Start Bank: <input type="number" v-model.number="start_bank" min="10" max="100000" step="5"></card-item>
+				<card-item>Max Bank: <input type="number" v-model.number="max_bank" min="10" max="100000" step="10"></card-item>
+				<card-item>Bet Multi: <input type="number" v-model.number="bet_multi" min="0" max="10.0" step="0.1"></card-item>
+				<card-item>
+					<div class="row justify-content-center"><button v-on:click="manualReset">Restart</button></div>
+				</card-item>
+			</card>
+			<card title="General Info" class="bg-info">
+				<card-item>Wins: {{ wins }}</card-item>
+				<card-item>Rolls: {{ total_rolls }}</card-item>
+				<card-item>Win Rate: {{ winRate.toFixed(2) }}%</card-item>
+				<card-item>Avg Profit: {{ avgProfit }}</card-item>
+				<card-item>Highest Bet: {{ highest_bet.toFixed(2) }}</card-item>
+				<card-item>Highest Payout: {{ highest_payout.toFixed(2) }}</card-item>
+			</card>
+			<card title="Casino" class="bg-warning">
+				<card-item>Payout <input type="number" v-model.number="payout_rate" min="0" max="100" step="0.1"></card-item>
+				<card-item>Min Bet <input type="number" v-model.number="min_bet" min="0" max="100"></card-item>
+				<card-item>Win% <input type="number" v-model.number="win_odds" min="0" max="100.0" step="0.1"></card-item>
+			</card>
+			<card title="Player" class="bg-success">
+				<card-item>Bank: {{ bank.toFixed(2) }}</card-item>
+				<card-item>Take Home: {{ take_home.toFixed(2) }}</card-item>
+				<card-item>Safe Bets: {{ safeBetCount }}</card-item>
+				<card-item>Bust Odds: {{ safeBetOdds }}</card-item>
+				<card-item>Bet: {{ current_bet.toFixed(2) }} (Payout: {{ payout.toFixed(2) }})</card-item>
+				<card-item>Investment: {{ investment.toFixed(2) }}</card-item>
+			</card>
 		</div>
-		
-		
+		<!--
+		<tabs>
+			<div name="tab">test1</div>
+			<div name="tab">test2</div>
+			<div name="tab">test3</div>
+			<div name="tab">test3</div>
+		</tabs> -->
+
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
