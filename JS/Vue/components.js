@@ -8,11 +8,22 @@ Vue.component('tabs', {
 	mounted() {
 		console.log(this.$children);
 	},
+	methods: {
+		select(selectedTab) {
+			this.tabs.forEach((tab) => {
+				tab.selected = (tab.name == selectedTab.name);
+			});
+		}
+	},
 	template: `
 		<div class="card text-center">
 			<div class="card-header">
-				<ul class="nav nav-tabs card-header-tabs">
-					<li v-for="div in tabs" class="nav-item">{{ div.name }}</li>
+				<ul class="nav nav-tabs card-header-tabs justify-content-center">
+					<li v-for="tab in tabs" class="nav-item">
+						<a 	class="nav-link" 
+							:class="{ 'active': tab.selected }"
+							@click="select(tab)">{{ tab.name }}</a>
+					</li>
 				</ul>
 			</div>
 			<div class="card-body">
@@ -22,9 +33,23 @@ Vue.component('tabs', {
 	`
 });
 
+Vue.component('tab', {
+	props: {
+		active: { default: false },
+		name: { required: true }
+	},
+	data() {
+		return { selected: false };
+	},
+	mounted() {
+		this.selected = this.active;
+	},
+	template: `<div v-show="selected"><slot>{{ name }}</slot></div>`
+})
+
 Vue.component('card', {
 	props: {
-		title: { required: true }
+		title: { required: false }
 	},
 	template: 
 		`<div class="card" style="width: 18rem;">
