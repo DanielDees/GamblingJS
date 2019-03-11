@@ -12,6 +12,7 @@ Vue.component('tabs', {
 		select(selectedTab) {
 			this.tabs.forEach((tab) => {
 				tab.selected = (tab.name == selectedTab.name);
+				tab.viewing = ((tab.selected || selectedTab.name == "All") && tab.name != "All");
 			});
 		}
 	},
@@ -26,8 +27,11 @@ Vue.component('tabs', {
 					</li>
 				</ul>
 			</div>
+
 			<div class="card-body">
-				<slot></slot>
+				<div class="row justify-content-center">
+					<slot></slot>
+				</div>
 			</div>
 		</div>
 	`
@@ -35,16 +39,22 @@ Vue.component('tabs', {
 
 Vue.component('tab', {
 	props: {
+		//Why are props used if you can just set the values manually in mounted() ?
+		content_visible: { default: false },
 		active: { default: false },
 		name: { required: true }
 	},
 	data() {
-		return { selected: false };
+		return { 
+			selected: false,
+			viewing: false
+		};
 	},
 	mounted() {
 		this.selected = this.active;
+		this.viewing = this.content_visible;
 	},
-	template: `<div v-show="selected"><slot>{{ name }}</slot></div>`
+	template: `<div v-show="viewing"><slot>{{ name }}</slot></div>`
 })
 
 Vue.component('card', {
