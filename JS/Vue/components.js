@@ -39,7 +39,6 @@ Vue.component('tabs', {
 
 Vue.component('tab', {
 	props: {
-		//Why are props used if you can just set the values manually in mounted() ?
 		content_visible: { default: false },
 		active: { default: false },
 		name: { required: true }
@@ -61,8 +60,8 @@ Vue.component('card', {
 	props: {
 		title: { required: false }
 	},
-	template: 
-		`<div class="card" style="width: 18rem;">
+	template: `
+		<div class="card" style="width: 18rem;">
 			<div class="card-body">
 				<h5 class="card-title text-center">{{ title }}</h5>
 				
@@ -70,7 +69,8 @@ Vue.component('card', {
 					<slot></slot>
 				</ul>
 			</div>
-		</div>`
+		</div>
+	`
 });
 
 Vue.component('card-item', {
