@@ -47,6 +47,24 @@ var casino = new Vue({
 
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(4) + "%)";
 				},
+				bet_profitability_ratio() {
+					//So we want to start at 1 as our base bet, then pretend we lose and mutliply by bet multi. repeat the process in our betting moethod. Calculate profit % after total investment.
+					var investment = this.min_bet;
+					var max_winnings = this.min_bet * (this.payout_rate + 1);
+
+					//@todo move this to be a param of payout() so payout can be called with <i> rounds to similuate winnings
+					for (var i = 1; i < 10; i++) {
+						//Increase theoretical investment by amount that would be bet after <i> lost bets
+						investment += Math.pow(this.bet_multi, i);
+
+						//Calculate theoretical winnings after losing <i> bets based on betting strategy
+						max_winnings = Math.pow(this.bet_multi, i + 1) * (this.payout_rate + 1);
+					}
+
+					var profit_ratio = max_winnings / investment;
+
+					return profit_ratio;
+				},
 				payout() {
 					return this.current_bet + (this.current_bet * this.payout_rate);
 				},

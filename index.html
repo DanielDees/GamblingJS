@@ -36,7 +36,7 @@
 					<card-item>Roll Rate: <input type="number" v-model.number="roll_rate" min="0" max="1000" step="1"></card-item>
 					<card-item>Start Bank: <input type="number" v-model.number="start_bank" min="10" max="100000" step="5"></card-item>
 					<card-item>Max Bank: <input type="number" v-model.number="max_bank" min="10" max="100000" step="10"></card-item>
-					<card-item>Bet Multi: <input type="number" v-model.number="bet_multi" min="0" max="10.0" step="0.1"></card-item>
+					<card-item>Bet Multi: <input type="number" v-model.number="bet_multi" min="0" max="10.0" step="0.01"></card-item>
 					<card-item>
 						<div class="row justify-content-center"><button v-on:click="manualReset">Restart</button></div>
 					</card-item>
@@ -54,7 +54,7 @@
 			</tab>
 			<tab name="Casino">
 				<card class="bg-warning">
-					<card-item>Payout <input type="number" v-model.number="payout_rate" min="0" max="100" step="0.1"></card-item>
+					<card-item>Payout <input type="number" v-model.number="payout_rate" min="0" max="100" step="0.01"></card-item>
 					<card-item>Min Bet <input type="number" v-model.number="min_bet" min="0" max="100"></card-item>
 					<card-item>Win% <input type="number" v-model.number="win_odds" min="0" max="100.0" step="0.1"></card-item>
 				</card>
@@ -66,6 +66,7 @@
 					<card-item>Safe Bets: {{ safeBetCount }}</card-item>
 					<card-item>Bust Odds: {{ safeBetOdds }}</card-item>
 					<card-item>Bet: {{ current_bet.toFixed(2) }} (Payout: {{ payout.toFixed(2) }})</card-item>
+					<card-item>Bet Profitability Ratio: {{ bet_profitability_ratio.toFixed(3) }}</card-item>
 					<card-item>Investment: {{ investment.toFixed(2) }}</card-item>
 				</card>
 			</tab>
