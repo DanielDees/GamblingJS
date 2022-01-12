@@ -165,7 +165,7 @@ var casino = new Vue({
 				updateChart() {
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.take_home);
-					chart.data.datasets[2].data.push((this.bank + this.take_home).toFixed(2));
+					chart.data.datasets[2].data.push((this.bank + this.take_home - this.start_bank).toFixed(2));
 
 					while (chart.data.datasets[0].data.length > this.history) {
 						chart.data.datasets[0].data.shift();
