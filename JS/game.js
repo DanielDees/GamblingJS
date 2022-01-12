@@ -64,7 +64,7 @@ var casino = new Vue({
 						investment += Math.pow(this.bet_multi, i);
 
 						//Calculate theoretical winnings after losing <i> bets based on betting strategy
-						max_winnings = Math.pow(this.bet_multi, i + 1) * (this.payout_rate + 1);
+						max_winnings = Math.pow(this.bet_multi, i) * (this.payout_rate + 1);
 					}
 
 					var profit_ratio = max_winnings / investment;
