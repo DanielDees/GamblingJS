@@ -77,12 +77,26 @@
 					<card-item><input type="checkbox" v-model="restart_on_complete"> Restart on completion</card-item>
 				</card>
 			</tab>
+			<tab name="SaveData">
+				<card class="bg-primary">
+					<card-item>Dataset Size: {{ savedDatasetSize }} </card-item>
+					<card-item>Average Rolls: {{ savedAverageRolls.toFixed(2) }}</card-item>
+					<card-item>Average Net Profit: {{ savedAverageNetProfit.toFixed(2) }}</card-item>
+					<card-item>Bet Multi: {{ savedBetMulti }}</card-item>
+					<card-item>Start/Max Bank: {{ savedStartMaxBank }}</card-item>
+					<card-item>Casino Win%: {{ savedWinRate }}</card-item>
+					<card-item>Casino Payout: {{ savedPayoutRate }}</card-item>
+					<card-item>Min Bet: {{ savedMinBet }}</card-item>
+				</card>
+			</tab>
 		</tabs>
 
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
 	<script type="text/javascript">
+		//3D modeling library
+		//https://plotly.com/javascript/3d-surface-plots/
 		
 		var chart = new Chart(
 			$("#graph")[0].getContext('2d'), 

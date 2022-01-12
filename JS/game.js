@@ -5,11 +5,20 @@ var casino = new Vue({
 				history: 80,
 
 				//Autoroller
-				default_roll_rate: 10,
-				roll_rate: 10,
-				min_bank_percent: 10,
+				default_roll_rate: 100,
+				roll_rate: 15,
+				min_bank_percent: 0,
 				roll_only_safe: true,
 				restart_on_complete: false,
+
+				//SaveData
+				savedRolls: [],
+				savedNetProfit: [],
+				savedBetMulti: 0,
+				savedStartMaxBank: 0,
+				savedWinRate: 0,
+				savedPayoutRate: 0,
+				savedMinBet: 0,
 
 				// Casino
 				payout_rate: 2,
@@ -19,12 +28,12 @@ var casino = new Vue({
 				// Player
 				wins: 0,
 				total_rolls: 0,
-				start_bank: 40,
-				max_bank: 40,
-				bank: 40,
+				start_bank: 100,
+				max_bank: 100,
+				bank: 100,
 				//safe_bet_limit: 1,
 				take_home: 0,
-				bet_multi: 3,
+				bet_multi: 1.58,
 				current_bet: 0,
 				highest_bet: 0,
 				highest_payout: 0,
@@ -54,7 +63,6 @@ var casino = new Vue({
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(4) + "%)";
 				},
 				bet_profitability_ratio() {
-					//So we want to start at 1 as our base bet, then pretend we lose and mutliply by bet multi. repeat the process in our betting moethod. Calculate profit % after total investment.
 					var investment = this.min_bet;
 					var max_winnings = this.min_bet * (this.payout_rate + 1);
 
@@ -82,6 +90,27 @@ var casino = new Vue({
 				},
 				winRate() {
 					return (this.wins / this.total_rolls) * 100;
+				},
+				savedAverageRolls() {
+					var total = 0;
+
+					for (var i = 0; i < this.savedRolls.length; i++) {
+						total += this.savedRolls[i];
+					}
+
+					return total / this.savedRolls.length;
+				},
+				savedAverageNetProfit() {
+					var total = 0;
+
+					for (var i = 0; i < this.savedNetProfit.length; i++) {
+						total += this.savedNetProfit[i];
+					}
+
+					return total / this.savedNetProfit.length;
+				},
+				savedDatasetSize() {
+					return this.savedRolls.length;
 				}
 			},
 			methods: {
@@ -156,6 +185,16 @@ var casino = new Vue({
 						this.bet();
 						this.roll();
 						this.updateChart();
+					}
+
+					if (this.roll_rate < 1) {
+						this.savedRolls.push(this.total_rolls);
+						this.savedNetProfit.push(this.take_home + this.bank - this.start_bank);
+						this.savedBetMulti = this.bet_multi;
+						this.savedMinBet = this.min_bet;
+						this.savedWinRate = this.win_odds;
+						this.savedPayoutRate = this.payout_rate;
+						this.savedStartMaxBank = this.start_bank;
 					}
 
 					if (this.roll_rate < 1 && this.restart_on_complete) {
