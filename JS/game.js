@@ -3,7 +3,13 @@ var casino = new Vue({
 			data: {
 				//Game Settings
 				history: 80,
+
+				//Autoroller
+				default_roll_rate: 10,
 				roll_rate: 10,
+				min_bank_percent: 10,
+				roll_only_safe: true,
+				restart_on_complete: false,
 
 				// Casino
 				payout_rate: 2,
@@ -15,7 +21,7 @@ var casino = new Vue({
 				total_rolls: 0,
 				start_bank: 40,
 				max_bank: 40,
-				bank: 0,
+				bank: 40,
 				//safe_bet_limit: 1,
 				take_home: 0,
 				bet_multi: 3,
@@ -72,7 +78,7 @@ var casino = new Vue({
 					return ((this.bank + this.take_home - this.start_bank) / this.wins).toFixed(2);
 				},
 				autoRollRate() {
-					return this.roll_rate > 0 ? 1000 / this.roll_rate : 2147483647 /* int32 max */;
+					return this.roll_rate > 0 ? 1000 / this.roll_rate : 500;
 				},
 				winRate() {
 					return (this.wins / this.total_rolls) * 100;
@@ -129,9 +135,32 @@ var casino = new Vue({
 					this.win();
 				},
 				playRound() {
-					this.bet();
-					this.roll();
-					this.updateChart();
+
+					//Min Bank Percent
+					if (this.bank / this.max_bank < (this.min_bank_percent / 100)) {
+						this.roll_rate = 0;
+					}
+
+					//Safe Bets
+					else if (this.roll_only_safe && this.safeBetCount < 1) {
+						this.roll_rate = 0;
+					}
+
+					else {
+
+						//Revert Roll Rate if criteria stopping rolls are no longer being met.
+						if (this.roll_rate < 1) {
+							this.roll_rate = this.default_roll_rate;
+						}
+
+						this.bet();
+						this.roll();
+						this.updateChart();
+					}
+
+					if (this.roll_rate < 1 && this.restart_on_complete) {
+						this.reset();
+					}
 				},
 				updateChart() {
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
@@ -149,12 +178,7 @@ var casino = new Vue({
 
 					chart.update({ duration: Math.min(this.autoRollRate * 2, 4000) });
 				},
-				reset(manual) {
-
-					if ((this.bank >= this.min_bet || this.take_home > 0) && !manual) {
-						return false;
-					}
-
+				reset() {
 					chart.data.labels = [];
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
@@ -169,10 +193,13 @@ var casino = new Vue({
 					this.investment = 0;
 					this.wins = 0;
 					this.total_rolls = 0;
+					this.roll_rate = this.default_roll_rate;
 					return true;
 				},
+				//In case we want special logic for users resetting.
+				//There used to be a difference that I've forgotten the purpose of so I removed it.
 				manualReset() {
-					this.reset(true);
+					this.reset();
 				}
 			}
 		});
