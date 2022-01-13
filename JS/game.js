@@ -213,6 +213,31 @@ var casino = new Vue({
 						this.reset();
 					}
 				},
+				exportCSV() {
+					//For export/import tool
+					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
+
+					//Modified Sample Code from stackoverflow link. Review and tweak this is just spitballed pseudo code
+					const rows = [
+					    ["savedNetProfit", this.savedNetProfit],
+					    ["savedRolls", this.savedRolls],
+					    ["minbet" => this.savedMinBet],
+					    ["test" => this.savedWinRate],
+					    ["test" => this.savedBetMulti],
+					    ["test" => this.savedPayoutRate],
+					    ["test" => this.savedStartMaxBank],
+					    ["test" => this.savedDatasetSize]
+					];
+
+					let csvContent = "data:text/csv;charset=utf-8," 
+					    + rows.map(e => e.join(",")).join("\n");
+
+				    var encodedUri = encodeURI(csvContent);
+					window.open(encodedUri);
+				},
+				importCSV() {
+
+				},
 				updateChart() {
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.take_home);
