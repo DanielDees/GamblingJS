@@ -9,7 +9,7 @@ var casino = new Vue({
 				roll_rate: 15,
 				min_bank_percent: 0,
 				roll_only_safe: true,
-				restart_on_complete: false,
+				restart_on_complete: true,
 
 				//SaveData
 				savedRolls: [],
@@ -111,6 +111,17 @@ var casino = new Vue({
 				},
 				savedDatasetSize() {
 					return this.savedRolls.length;
+				},
+				savedDataPositiveRate() {
+					var wins = 0;
+
+					for (var i = this.savedNetProfit.length - 1; i >= 0; i--) {
+						if (this.savedNetProfit[i] >= 0) {
+							wins++;
+						}
+					}
+
+					return wins / this.savedNetProfit.length;
 				}
 			},
 			methods: {
