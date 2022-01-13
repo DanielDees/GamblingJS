@@ -19,8 +19,12 @@
 	<script src="JS/Vue/vue.js"></script>
 	<script src="JS/Vue/components.js"></script>
 
-	<!-- Chart.js -->
+	<!-- Chart -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
+
+	<!-- Plotly -->
+	<script src='https://cdn.plot.ly/plotly-2.8.3.min.js'></script>
+	<script src='https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.17/d3.min.js'></script>
 
 </head>
 <body>
@@ -92,9 +96,14 @@
 			</tab>
 		</tabs>
 
+
+		<div id='heatmap'><!-- Plotly chart will be drawn inside this DIV --></div>
+
+
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
+	<script type="text/javascript" src="js/heatmap.js"></script>
 	<script type="text/javascript">
 		//3D modeling library
 		//https://plotly.com/javascript/3d-surface-plots/

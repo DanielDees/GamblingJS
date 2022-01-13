@@ -6,7 +6,7 @@ var casino = new Vue({
 
 				//Autoroller
 				default_roll_rate: 100,
-				roll_rate: 15,
+				roll_rate: 100,
 				min_bank_percent: 0,
 				roll_only_safe: true,
 				restart_on_complete: true,
@@ -21,8 +21,9 @@ var casino = new Vue({
 				savedMinBet: 0,
 
 				// Casino
-				payout_rate: 2,
-				win_odds: 31.58,
+				payout_rate: 1,
+				win_odds: 48.6,
+				//win_odds: 31.58,
 				min_bet: 1,
 
 				// Player
@@ -33,7 +34,7 @@ var casino = new Vue({
 				bank: 100,
 				//safe_bet_limit: 1,
 				take_home: 0,
-				bet_multi: 1.58,
+				bet_multi: 3.16,
 				current_bet: 0,
 				highest_bet: 0,
 				highest_payout: 0,
