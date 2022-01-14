@@ -87,23 +87,22 @@
 					<card-item>Net Profit Rate: {{ savedDataPositiveRate.toFixed(2) }}
 					<card-item>Average Rolls: {{ savedAverageRolls.toFixed(2) }}</card-item>
 					<card-item>Average Net Profit: {{ savedAverageNetProfit.toFixed(2) }}</card-item>
-					<card-item>Bet Multi: {{ savedBetMulti }}</card-item>
-					<card-item>Start/Max Bank: {{ savedStartMaxBank }}</card-item>
-					<card-item>Casino Win%: {{ savedWinRate }}</card-item>
-					<card-item>Casino Payout: {{ savedPayoutRate }}</card-item>
-					<card-item>Min Bet: {{ savedMinBet }}</card-item>
+					<card-item>
+						<div class="row justify-content-center"><button v-on:click="saveDataPoint">Save Data Point</button></div>
+					</card-tiem>
+					<card-item>
+						<div class="row justify-content-center"><button v-on:click="plotDataPoints">Plot Data Points</button></div>
+					</card-tiem>
 				</card>
 			</tab>
 		</tabs>
 
-
 		<div id='heatmap'><!-- Plotly chart will be drawn inside this DIV --></div>
-
 
 	</div><!-- wrapper -->
 	
 	<script type="text/javascript" src="js/game.js"></script>
-	<script type="text/javascript" src="js/heatmap.js"></script>
+	<!-- <script type="text/javascript" src="js/heatmap.js"></script> -->
 	<script type="text/javascript">
 		//3D modeling library
 		//https://plotly.com/javascript/3d-surface-plots/

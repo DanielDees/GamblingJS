@@ -5,8 +5,8 @@ var casino = new Vue({
 				history: 80,
 
 				//Autoroller
-				default_roll_rate: 100,
-				roll_rate: 100,
+				default_roll_rate: 200,
+				roll_rate: 200,
 				min_bank_percent: 0,
 				roll_only_safe: true,
 				restart_on_complete: true,
@@ -14,11 +14,14 @@ var casino = new Vue({
 				//SaveData
 				savedRolls: [],
 				savedNetProfit: [],
-				savedBetMulti: 0,
-				savedStartMaxBank: 0,
-				savedWinRate: 0,
-				savedPayoutRate: 0,
-				savedMinBet: 0,
+
+				//For Plotly 3D model
+				plot_z_data: [
+					[]
+				],
+				plotBetMulti: [],
+				plotStartBank: [],
+				plotAverageNetProfit: [],
 
 				// Casino
 				payout_rate: 1,
@@ -29,12 +32,12 @@ var casino = new Vue({
 				// Player
 				wins: 0,
 				total_rolls: 0,
-				start_bank: 100,
-				max_bank: 100,
-				bank: 100,
+				start_bank: 50,
+				max_bank: 50,
+				bank: 50,
 				//safe_bet_limit: 1,
 				take_home: 0,
-				bet_multi: 3.16,
+				bet_multi: 2,
 				current_bet: 0,
 				highest_bet: 0,
 				highest_payout: 0,
@@ -201,42 +204,90 @@ var casino = new Vue({
 
 					if (this.roll_rate < 1) {
 						this.savedRolls.push(this.total_rolls);
+
+						
 						this.savedNetProfit.push(this.take_home + this.bank - this.start_bank);
 						this.savedBetMulti = this.bet_multi;
 						this.savedMinBet = this.min_bet;
-						this.savedWinRate = this.win_odds;
+						this.savedWinOdds = this.win_odds;
 						this.savedPayoutRate = this.payout_rate;
 						this.savedStartMaxBank = this.start_bank;
 					}
 
 					if (this.roll_rate < 1 && this.restart_on_complete) {
-						this.reset();
+						this.softReset();
+					}
+
+					//Automation for 3D model
+					if (this.savedDatasetSize >= 100) {
+						this.saveDataPoint();
+						this.hardReset();
 					}
 				},
-				exportCSV() {
+				saveDataPoint() {
+					//Update to check against how granular we want the data to be when automated
+					//Plot data points to chart once granularity threshold is met
+					//z-axis: Average net profit (vertical component)
+
+					//x-axis: bet_multi
+					var xStep = 0.05;
+					//y-axis: start_bank & max_bank
+					var y = this.plot_z_data.length - 1;
+					var yStep = 50;
+					var yGranularity = 10;
+
+					//Save Z-Axis data at current X/Y Coordinate
+					this.plot_z_data[y].push(this.savedAverageNetProfit);
+
+					//Update for next Y Coordinate
+					this.start_bank += yStep;
+					this.max_bank += yStep;
+
+					//Go to next X-Axis Coordinate after 5 Y-Axis Coordinates
+					if (this.plot_z_data[y].length >= yGranularity) {
+						
+						//Create new X-Axis Coordinate, Recreate Plot Render
+						this.plotDataPoints();
+
+						//Update for next X Coordinate
+						this.bet_multi += xStep;
+
+						//Reset Y-Axis Coordinate
+						this.start_bank = 100;
+						this.max_bank = 100;
+					}
+				},
+				plotDataPoints() {
 					//For export/import tool
 					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
 
-					//Modified Sample Code from stackoverflow link. Review and tweak this is just spitballed pseudo code
-					const rows = [
-					    ["savedNetProfit", this.savedNetProfit],
-					    ["savedRolls", this.savedRolls],
-					    ["minbet" => this.savedMinBet],
-					    ["test" => this.savedWinRate],
-					    ["test" => this.savedBetMulti],
-					    ["test" => this.savedPayoutRate],
-					    ["test" => this.savedStartMaxBank],
-					    ["test" => this.savedDatasetSize]
-					];
+					//Creates new X-Axis row to hold data along the Y-Axis.
+					this.plot_z_data.push([]);
+					//console.log(this.plot_z_data);
 
-					let csvContent = "data:text/csv;charset=utf-8," 
-					    + rows.map(e => e.join(",")).join("\n");
-
-				    var encodedUri = encodeURI(csvContent);
-					window.open(encodedUri);
+					var layout = {
+					  title: 'Test Plot',
+					  autosize: false,
+					  width: 800,
+					  height: 800,
+					  margin: {
+					    l: 90,
+					    r: 90,
+					    b: 90,
+					    t: 90,
+					  }
+					};
+					Plotly.newPlot(
+						'heatmap', 
+						[{
+				           z: this.plot_z_data,
+				           type: 'surface'
+				        }], 
+					    layout
+					);
 				},
 				importCSV() {
-
+					//TBD
 				},
 				updateChart() {
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
@@ -254,7 +305,25 @@ var casino = new Vue({
 
 					chart.update({ duration: Math.min(this.autoRollRate * 2, 4000) });
 				},
-				reset() {
+				softReset() {
+					chart.data.labels = [];
+					chart.data.datasets[0].data = [];
+					chart.data.datasets[1].data = [];
+					chart.data.datasets[2].data = [];
+					chart.data.datasets[0].pointBorderColor = [];
+					chart.data.datasets[0].pointBackgroundColor = [];
+
+					this.current_bet = this.min_bet;
+					this.take_home = 0;
+					this.bank = this.start_bank
+					this.wins = 0;
+					this.total_rolls = 0;
+					this.highest_bet = 0;
+					this.investment = 0;
+
+					//Retain Plot data...
+				},
+				hardReset() {
 					chart.data.labels = [];
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
@@ -269,13 +338,15 @@ var casino = new Vue({
 					this.investment = 0;
 					this.wins = 0;
 					this.total_rolls = 0;
-					this.roll_rate = this.default_roll_rate;
-					return true;
+					
+					//Clear Plot data as well...
+					this.savedRolls = [];
+					this.savedNetProfit = [];
 				},
 				//In case we want special logic for users resetting.
 				//There used to be a difference that I've forgotten the purpose of so I removed it.
 				manualReset() {
-					this.reset();
+					this.hardReset();
 				}
 			}
 		});

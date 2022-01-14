@@ -3,12 +3,13 @@ function unpack(rows, key) {
   return rows.map(function(row) { return row[key]; });
 }
 
-var z_data=[ ]
+var z_data=[ ];
 for(i=0;i<24;i++)
 {
   z_data.push(unpack(rows,i));
 }
 
+console.log(z_data);
 var data = [{
            z: z_data,
            type: 'surface'
