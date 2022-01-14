@@ -75,7 +75,7 @@
 			</tab>
 			<tab name="AutoRoller">
 				<card class="bg-dark">
-					<card-item>Roll Rate: <input type="number" v-model.number="roll_rate" min="0" max="1000" step="1"></card-item>
+					<card-item>Roll Rate: <input type="number" v-model.number="default_roll_rate" min="0" max="1000" step="1"></card-item>
 					<card-item>Min Bank % <input type="number" v-model.number="min_bank_percent" min="0" max="100.0" step="0.1"></card-item>
 					<card-item><input type="checkbox" v-model="roll_only_safe"> Roll Only Safe Bets</card-item>
 					<card-item><input type="checkbox" v-model="restart_on_complete"> Restart on completion</card-item>
@@ -87,12 +87,19 @@
 					<card-item>Net Profit Rate: {{ savedDataPositiveRate.toFixed(2) }}
 					<card-item>Average Rolls: {{ savedAverageRolls.toFixed(2) }}</card-item>
 					<card-item>Average Net Profit: {{ savedAverageNetProfit.toFixed(2) }}</card-item>
-					<card-item>
-						<div class="row justify-content-center"><button v-on:click="saveDataPoint">Save Data Point</button></div>
-					</card-tiem>
-					<card-item>
-						<div class="row justify-content-center"><button v-on:click="plotDataPoints">Plot Data Points</button></div>
-					</card-tiem>
+
+					<!-- Bet Multi Settings -->
+					<card-item>Bet Multi Granularity: <input type="number" v-model.number="plotBetMultiGranularity" min="0.001" max="1.0" step="0.001"></card-item>
+					<card-item>Bet Multi Data Set Size: <input type="number" v-model.number="plotBetMultiDataSetSize" min="2" max="10000" step="1"></card-item>
+
+					<!-- Start Bank Settings -->
+					<card-item>Start Bank Granularity: <input type="number" v-model.number="plotStartBankGranularity" min="5" max="500" step="5"></card-item>
+					<card-item>Start Bank Data Set Size: <input type="number" v-model.number="plotStartBankDataSetSize" min="2" max="10000" step="1"></card-item>
+
+					<!-- Data Set Settings -->
+					<card-item>Plot Point Data Set Size: <input type="number" v-model.number="plotPointDataSetSize" min="5" max="10000" step="1"></card-item>
+					
+					
 				</card>
 			</tab>
 		</tabs>

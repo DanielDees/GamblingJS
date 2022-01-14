@@ -22,6 +22,14 @@ var casino = new Vue({
 				plotBetMulti: [],
 				plotStartBank: [],
 				plotAverageNetProfit: [],
+				
+				plotStartBankGranularity: 10,
+				plotStartBankDataSetSize: 5,
+
+				plotBetMultiGranularity: 0.1,
+				plotBetMultiDataSetSize: 5,
+				
+				plotPointDataSetSize: 10,
 
 				// Casino
 				payout_rate: 1,
@@ -219,7 +227,7 @@ var casino = new Vue({
 					}
 
 					//Automation for 3D model
-					if (this.savedDatasetSize >= 100) {
+					if (this.savedDatasetSize >= this.plotPointDataSetSize) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
@@ -230,31 +238,28 @@ var casino = new Vue({
 					//z-axis: Average net profit (vertical component)
 
 					//x-axis: bet_multi
-					var xStep = 0.05;
 					//y-axis: start_bank & max_bank
 					var y = this.plot_z_data.length - 1;
-					var yStep = 50;
-					var yGranularity = 10;
 
 					//Save Z-Axis data at current X/Y Coordinate
 					this.plot_z_data[y].push(this.savedAverageNetProfit);
 
 					//Update for next Y Coordinate
-					this.start_bank += yStep;
-					this.max_bank += yStep;
+					this.start_bank += this.plotStartBankGranularity;
+					this.max_bank += this.plotStartBankGranularity;
 
 					//Go to next X-Axis Coordinate after 5 Y-Axis Coordinates
-					if (this.plot_z_data[y].length >= yGranularity) {
+					if (this.plot_z_data[y].length >= this.plotStartBankDataSetSize) {
 						
 						//Create new X-Axis Coordinate, Recreate Plot Render
 						this.plotDataPoints();
 
 						//Update for next X Coordinate
-						this.bet_multi += xStep;
+						this.bet_multi += this.plotBetMultiGranularity;
 
 						//Reset Y-Axis Coordinate
-						this.start_bank = 100;
-						this.max_bank = 100;
+						this.start_bank = this.plotStartBankGranularity;
+						this.max_bank = this.plotStartBankGranularity;
 					}
 				},
 				plotDataPoints() {
