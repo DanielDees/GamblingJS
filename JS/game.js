@@ -23,13 +23,13 @@ var casino = new Vue({
 				plotStartBank: [],
 				plotAverageNetProfit: [],
 				
-				plotStartBankGranularity: 10,
-				plotStartBankDataSetSize: 5,
+				plotStartBankGranularity: 20,
+				plotStartBankDataSetSize: 10,
 
 				plotBetMultiGranularity: 0.1,
-				plotBetMultiDataSetSize: 5,
+				plotBetMultiDataSetSize: 10,
 				
-				plotPointDataSetSize: 10,
+				plotPointDataSetSize: 15,
 
 				// Casino
 				payout_rate: 1,
@@ -188,32 +188,26 @@ var casino = new Vue({
 				},
 				playRound() {
 
-					//Min Bank Percent
-					if (this.bank / this.max_bank < (this.min_bank_percent / 100)) {
-						this.roll_rate = 0;
-					}
-
+					var endRound = false;
 					//Safe Bets
-					else if (this.roll_only_safe && this.safeBetCount < 1) {
-						this.roll_rate = 0;
+					if (this.roll_only_safe && this.safeBetCount < 1) {
+						endRound = true;
 					}
+					
+					//Min Bank Percent
+					//else if (this.bank / this.max_bank < (this.min_bank_percent / 100)) {
+					//	this.roll_rate = 0;
+					//}
 
-					else {
-
-						//Revert Roll Rate if criteria stopping rolls are no longer being met.
-						if (this.roll_rate < 1) {
-							this.roll_rate = this.default_roll_rate;
-						}
-
+					if (!endRound) {
 						this.bet();
 						this.roll();
 						this.updateChart();
 					}
 
-					if (this.roll_rate < 1) {
+					if (endRound) {
+						this.roll_rate = this.default_roll_rate;
 						this.savedRolls.push(this.total_rolls);
-
-						
 						this.savedNetProfit.push(this.take_home + this.bank - this.start_bank);
 						this.savedBetMulti = this.bet_multi;
 						this.savedMinBet = this.min_bet;
@@ -222,7 +216,7 @@ var casino = new Vue({
 						this.savedStartMaxBank = this.start_bank;
 					}
 
-					if (this.roll_rate < 1 && this.restart_on_complete) {
+					if (endRound && this.restart_on_complete) {
 						this.softReset();
 					}
 
@@ -248,11 +242,11 @@ var casino = new Vue({
 					this.start_bank += this.plotStartBankGranularity;
 					this.max_bank += this.plotStartBankGranularity;
 
-					//Go to next X-Axis Coordinate after 5 Y-Axis Coordinates
+					//Go to next X-Axis Coordinate
 					if (this.plot_z_data[y].length >= this.plotStartBankDataSetSize) {
 						
-						//Create new X-Axis Coordinate, Recreate Plot Render
-						this.plotDataPoints();
+						//Creates new X-Axis row to hold data along the Y-Axis.
+						this.plot_z_data.push([]);
 
 						//Update for next X Coordinate
 						this.bet_multi += this.plotBetMultiGranularity;
@@ -261,17 +255,18 @@ var casino = new Vue({
 						this.start_bank = this.plotStartBankGranularity;
 						this.max_bank = this.plotStartBankGranularity;
 					}
+
+					//Update Plot
+					this.plotDataPoints();
 				},
 				plotDataPoints() {
 					//For export/import tool
 					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
 
-					//Creates new X-Axis row to hold data along the Y-Axis.
-					this.plot_z_data.push([]);
-					//console.log(this.plot_z_data);
+					var title = "X: " + this.plot_z_data.length + " | Y: " + this.plot_z_data[this.plot_z_data.length - 1].length;
 
 					var layout = {
-					  title: 'Test Plot',
+					  title: title,
 					  autosize: false,
 					  width: 800,
 					  height: 800,
