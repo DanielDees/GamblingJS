@@ -20,13 +20,13 @@ var casino = new Vue({
 					[]
 				],
 				
-				plotStartBankGranularity: 20,
-				plotStartBankDataSetSize: 3,
+				plotStartBankGranularity: 10,
+				plotStartBankDataSetSize: 15,
 
-				plotBetMultiGranularity: 0.1,
-				plotBetMultiDataSetSize: 3,
+				plotBetMultiGranularity: 0.05,
+				plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 5,
+				plotPointDataSetSize: 20,
 
 				// Casino
 				payout_rate: 1,
@@ -37,9 +37,9 @@ var casino = new Vue({
 				// Player
 				wins: 0,
 				total_rolls: 0,
-				start_bank: 50,
-				max_bank: 50,
-				bank: 50,
+				start_bank: 10,
+				max_bank: 10,
+				bank: 10,
 				//safe_bet_limit: 1,
 				take_home: 0,
 				bet_multi: 2,
