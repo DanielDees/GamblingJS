@@ -24,9 +24,9 @@ var casino = new Vue({
 				plotStartBankDataSetSize: 15,
 
 				plotBetMultiGranularity: 0.05,
-				plotBetMultiDataSetSize: 20,
+				//plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 20,
+				plotPointDataSetSize: 200,
 
 				// Casino
 				payout_rate: 1,
@@ -260,7 +260,7 @@ var casino = new Vue({
 					//For export/import tool
 					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
 
-					var title = "X: " + this.plot_z_data.length + " | Y: " + this.plot_z_data[this.plot_z_data.length - 1].length;
+					var title = "Bet Multi: " + this.plot_z_data.length + " | Start Bank: " + this.plot_z_data[this.plot_z_data.length - 1].length + " | Z-Set: " + this.plotPointDataSetSize;
 
 					var layout = {
 					  title: title,
