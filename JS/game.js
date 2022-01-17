@@ -19,17 +19,14 @@ var casino = new Vue({
 				plot_z_data: [
 					[]
 				],
-				plotBetMulti: [],
-				plotStartBank: [],
-				plotAverageNetProfit: [],
 				
 				plotStartBankGranularity: 20,
-				plotStartBankDataSetSize: 10,
+				plotStartBankDataSetSize: 3,
 
 				plotBetMultiGranularity: 0.1,
-				plotBetMultiDataSetSize: 10,
+				plotBetMultiDataSetSize: 3,
 				
-				plotPointDataSetSize: 15,
+				plotPointDataSetSize: 5,
 
 				// Casino
 				payout_rate: 1,
@@ -166,7 +163,7 @@ var casino = new Vue({
 				lose() {
 					chart.data.labels.push("Loss Bet: " + this.current_bet.toFixed(0));
 
-					if (this.bank < this.min_bet) {
+					if (this.bank < 0) {
 						var refill = this.start_bank - this.bank;
 						this.bank += refill;
 						this.take_home -= refill;
@@ -286,6 +283,11 @@ var casino = new Vue({
 					    layout
 					);
 				},
+				clearPlotData() {
+					this.savedRolls = [];
+					this.savedNetProfit = [];
+					this.plotDataPoints();
+				},
 				importCSV() {
 					//TBD
 				},
@@ -305,13 +307,16 @@ var casino = new Vue({
 
 					chart.update({ duration: Math.min(this.autoRollRate * 2, 4000) });
 				},
-				softReset() {
+				clearChart() {
 					chart.data.labels = [];
 					chart.data.datasets[0].data = [];
 					chart.data.datasets[1].data = [];
 					chart.data.datasets[2].data = [];
 					chart.data.datasets[0].pointBorderColor = [];
 					chart.data.datasets[0].pointBackgroundColor = [];
+				},
+				softReset() {
+					this.clearChart();
 
 					this.current_bet = this.min_bet;
 					this.take_home = 0;
@@ -324,24 +329,17 @@ var casino = new Vue({
 					//Retain Plot data...
 				},
 				hardReset() {
-					chart.data.labels = [];
-					chart.data.datasets[0].data = [];
-					chart.data.datasets[1].data = [];
-					chart.data.datasets[2].data = [];
-					chart.data.datasets[0].pointBorderColor = [];
-					chart.data.datasets[0].pointBackgroundColor = [];
+					this.clearChart();
 
 					this.current_bet = this.min_bet;
 					this.take_home = 0;
 					this.bank = this.start_bank;
-					this.highest_bet = 0;
-					this.investment = 0;
 					this.wins = 0;
 					this.total_rolls = 0;
-					
+					this.highest_bet = 0;
+					this.investment = 0;
 					//Clear Plot data as well...
-					this.savedRolls = [];
-					this.savedNetProfit = [];
+					this.clearPlotData();
 				},
 				//In case we want special logic for users resetting.
 				//There used to be a difference that I've forgotten the purpose of so I removed it.
