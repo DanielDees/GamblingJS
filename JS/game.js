@@ -32,6 +32,8 @@ var casino = new Vue({
 				win_odds: 48.6,
 				//win_odds: 31.58,
 				min_bet: 1,
+				// TODO implement after splitting up the code properly into multiple vue classes
+				//max_bet: 25000
 
 				// Player
 				wins: 0,
@@ -55,11 +57,7 @@ var casino = new Vue({
 					return max;
 				},
 				safeBetOdds() {
-
-					var max = 0;
-					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
-
-					var odds = Math.pow(1 - (this.win_odds / 100), max) * 100;
+					var odds = Math.pow(1 - (this.win_odds / 100), this.safeBetCount) * 100;
 
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(4) + "%)";
 				},
@@ -162,11 +160,6 @@ var casino = new Vue({
 					if (this.roll_only_safe && this.safeBetCount < 1) {
 						endRound = true;
 					}
-					
-					//Min Bank Percent
-					//else if (this.bank / this.max_bank < (this.min_bank_percent / 100)) {
-					//	this.roll_rate = 0;
-					//}
 
 					if (!endRound) {
 						this.bet();
@@ -175,17 +168,8 @@ var casino = new Vue({
 					}
 
 					if (endRound) {
-						this.roll_rate = this.default_roll_rate;
 						this.savedRolls.push(this.total_rolls);
 						this.savedNetProfit.push(this.take_home + this.bank - this.start_bank);
-						this.savedBetMulti = this.bet_multi;
-						this.savedMinBet = this.min_bet;
-						this.savedWinOdds = this.win_odds;
-						this.savedPayoutRate = this.payout_rate;
-						this.savedStartMaxBank = this.start_bank;
-					}
-
-					if (endRound) {
 						this.softReset();
 					}
 
@@ -300,15 +284,10 @@ var casino = new Vue({
 
 					//Retain Plot data...
 				},
+				// TODO We need to clear the 3d plot on hardReset
 				hardReset() {
 					this.softReset();
-
 					this.clearPlotData();
 				},
-				//In case we want special logic for users resetting.
-				//There used to be a difference that I've forgotten the purpose of so I removed it.
-				manualReset() {
-					this.hardReset();
-				}
 			}
 		});

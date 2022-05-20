@@ -52,6 +52,7 @@ button:active {
 }
 
 .card {
+	background-color: darkslateblue;
 	border-radius: 8px;
 	margin: 6px;
 }
