@@ -9,7 +9,6 @@ var casino = new Vue({
 				roll_rate: 200,
 				min_bank_percent: 0,
 				roll_only_safe: true,
-				restart_on_complete: true,
 
 				//SaveData
 				savedRolls: [],
@@ -26,7 +25,7 @@ var casino = new Vue({
 				plotBetMultiGranularity: 0.05,
 				//plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 200,
+				plotPointDataSetSize: 15,
 
 				// Casino
 				payout_rate: 1,
@@ -50,19 +49,12 @@ var casino = new Vue({
 			},
 			computed: {
 				safeBetCount() {
-					if (this.bet_multi <= 1) {
-						return;
-					}
-
 					var max = 0;
 					//@todo Edit to calculate without while loop
 					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
 					return max;
 				},
 				safeBetOdds() {
-					if (this.bet_multi <= 1) {
-						return;
-					}
 
 					var max = 0;
 					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
@@ -101,36 +93,16 @@ var casino = new Vue({
 					return (this.wins / this.total_rolls) * 100;
 				},
 				savedAverageRolls() {
-					var total = 0;
-
-					for (var i = 0; i < this.savedRolls.length; i++) {
-						total += this.savedRolls[i];
-					}
-
-					return total / this.savedRolls.length;
+					return this.savedRolls.reduce((sum, n) => sum + n, 0) / this.savedRolls.length;
 				},
 				savedAverageNetProfit() {
-					var total = 0;
-
-					for (var i = 0; i < this.savedNetProfit.length; i++) {
-						total += this.savedNetProfit[i];
-					}
-
-					return total / this.savedNetProfit.length;
+					return this.savedNetProfit.reduce((sum, n) => sum + n, 0) / this.savedNetProfit.length;
 				},
 				savedDatasetSize() {
 					return this.savedRolls.length;
 				},
 				savedDataPositiveRate() {
-					var wins = 0;
-
-					for (var i = this.savedNetProfit.length - 1; i >= 0; i--) {
-						if (this.savedNetProfit[i] >= 0) {
-							wins++;
-						}
-					}
-
-					return wins / this.savedNetProfit.length;
+					return this.savedNetProfit.filter(profit => profit >= 0).length / this.savedNetProfit.length;
 				}
 			},
 			methods: {
@@ -213,7 +185,7 @@ var casino = new Vue({
 						this.savedStartMaxBank = this.start_bank;
 					}
 
-					if (endRound && this.restart_on_complete) {
+					if (endRound) {
 						this.softReset();
 					}
 
@@ -329,16 +301,8 @@ var casino = new Vue({
 					//Retain Plot data...
 				},
 				hardReset() {
-					this.clearChart();
+					this.softReset();
 
-					this.current_bet = this.min_bet;
-					this.take_home = 0;
-					this.bank = this.start_bank;
-					this.wins = 0;
-					this.total_rolls = 0;
-					this.highest_bet = 0;
-					this.investment = 0;
-					//Clear Plot data as well...
 					this.clearPlotData();
 				},
 				//In case we want special logic for users resetting.
