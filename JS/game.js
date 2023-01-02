@@ -27,7 +27,7 @@ var casino = new Vue({
 				plotBetMultiGranularity: 0.02,
 				//plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 400,
+				plotPointDataSetSize: 1000,
 
 				// Casino
 				payout_rate: 1,
@@ -184,9 +184,9 @@ var casino = new Vue({
 					}
 
 					//Automation for 3D model
-					//Continue running simulation until our long term return rate is negative. 
+					//Continue running simulation until our long term return rate is negative by more than 0.2% 
 					//This ensures we do not log a positive return rate on losing betting strategies
-					if (this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfit < 0) {
+					if (this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -0.5) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
