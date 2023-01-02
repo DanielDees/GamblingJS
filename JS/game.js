@@ -186,7 +186,8 @@ var casino = new Vue({
 					//Automation for 3D model
 					//Continue running simulation until our long term return rate is negative by more than the designated % value 
 					//This ensures we do not log a positive return rate on losing betting strategies
-					if (this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -2) {
+					//A cap is set at 100,000 in the case that a betting strategy that beats the buffer is found so we don't get softlocked
+					if ((this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -2) || this.savedDatasetSize > 120000) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
@@ -256,7 +257,10 @@ var casino = new Vue({
 				clearPlotData() {
 					this.savedRolls = [];
 					this.savedNetProfit = [];
-					this.updatePlot();
+
+					if (this.plot_enabled) {
+						this.updatePlot();
+					}
 				},
 				exportCSV() {
 					// Create a CSV file in the same directory as our index.html file
