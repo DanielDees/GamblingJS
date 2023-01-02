@@ -3,10 +3,12 @@ var casino = new Vue({
 			data: {
 				//Game Settings
 				history: 80,
+				chart_enabled: false,
+				plot_enabled: false,
 
 				//Autoroller
-				default_roll_rate: 200,
-				roll_rate: 200,
+				default_roll_rate: 100,
+				roll_rate: 100,
 				min_bank_percent: 0,
 				roll_only_safe: true,
 
@@ -20,12 +22,12 @@ var casino = new Vue({
 				],
 				
 				plotStartBankGranularity: 10,
-				plotStartBankDataSetSize: 15,
+				plotStartBankDataSetSize: 50,
 
-				plotBetMultiGranularity: 0.05,
+				plotBetMultiGranularity: 0.02,
 				//plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 15,
+				plotPointDataSetSize: 400,
 
 				// Casino
 				payout_rate: 1,
@@ -96,6 +98,9 @@ var casino = new Vue({
 				savedAverageNetProfit() {
 					return this.savedNetProfit.reduce((sum, n) => sum + n, 0) / this.savedNetProfit.length;
 				},
+				savedAverageNetProfitPercent() {
+					return (this.savedAverageNetProfit / this.start_bank) * 100;
+				},
 				savedDatasetSize() {
 					return this.savedRolls.length;
 				},
@@ -113,7 +118,11 @@ var casino = new Vue({
 					this.highest_bet = Math.max(this.current_bet, this.highest_bet);
 				},
 				win() {
-					chart.data.labels.push("Win Bet: " + this.current_bet.toFixed(0));
+					if (this.chart_enabled) {
+						chart.data.labels.push("Win Bet: " + this.current_bet.toFixed(0));
+						chart.data.datasets[0].pointBorderColor.push("#4B5");
+						chart.data.datasets[0].pointBackgroundColor.push("#4B5");
+					}
 
 					this.bank += this.payout;
 					this.highest_payout = Math.max(this.payout, this.highest_payout);
@@ -126,12 +135,13 @@ var casino = new Vue({
 					this.current_bet = this.min_bet;
 					this.investment = 0;
 					this.wins++;
-
-					chart.data.datasets[0].pointBorderColor.push("#4B5");
-					chart.data.datasets[0].pointBackgroundColor.push("#4B5");
 				},
 				lose() {
-					chart.data.labels.push("Loss Bet: " + this.current_bet.toFixed(0));
+					if (this.chart_enabled) {
+						chart.data.labels.push("Lose Bet: " + this.current_bet.toFixed(0));
+						chart.data.datasets[0].pointBorderColor.push("#B22");
+						chart.data.datasets[0].pointBackgroundColor.push("#B22");
+					}					
 
 					if (this.bank < 0) {
 						var refill = this.start_bank - this.bank;
@@ -139,9 +149,6 @@ var casino = new Vue({
 						this.take_home -= refill;
 						this.current_bet = this.min_bet;
 					}
-
-					chart.data.datasets[0].pointBorderColor.push("#B22");
-					chart.data.datasets[0].pointBackgroundColor.push("#B22");
 				},
 				roll() {
 					this.total_rolls++;
@@ -164,7 +171,10 @@ var casino = new Vue({
 					if (!endRound) {
 						this.bet();
 						this.roll();
-						this.updateChart();
+
+						if (this.chart_enabled) {
+							this.updateChart();
+						}
 					}
 
 					if (endRound) {
@@ -174,7 +184,9 @@ var casino = new Vue({
 					}
 
 					//Automation for 3D model
-					if (this.savedDatasetSize >= this.plotPointDataSetSize) {
+					//Continue running simulation until our long term return rate is negative. 
+					//This ensures we do not log a positive return rate on losing betting strategies
+					if (this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfit < 0) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
@@ -188,8 +200,8 @@ var casino = new Vue({
 					//y-axis: start_bank & max_bank
 					var y = this.plot_z_data.length - 1;
 
-					//Save Z-Axis data at current X/Y Coordinate
-					this.plot_z_data[y].push(this.savedAverageNetProfit);
+					//Save Z-Axis data at current X/Y Coordinate (Will be saved as a percent of the starting bank.
+					this.plot_z_data[y].push(this.savedAverageNetProfitPercent);
 
 					//Update for next Y Coordinate
 					this.start_bank += this.plotStartBankGranularity;
@@ -210,9 +222,11 @@ var casino = new Vue({
 					}
 
 					//Update Plot
-					this.plotDataPoints();
+					if (this.plot_enabled) {
+						this.updatePlot();
+					}
 				},
-				plotDataPoints() {
+				updatePlot() {
 					//For export/import tool
 					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
 
@@ -242,10 +256,17 @@ var casino = new Vue({
 				clearPlotData() {
 					this.savedRolls = [];
 					this.savedNetProfit = [];
-					this.plotDataPoints();
+					this.updatePlot();
+				},
+				exportCSV() {
+					// Create a CSV file in the same directory as our index.html file
+					// CSV headers will include our betting strategy and the number of rounds played
+					// CSV data rows will include the number of rolls and the net profit for each round
+					var csv = 'Bet Multiplier,Start Bank,End Bank,Net Profit,Payout,Min Bet,Win%\n';
+					csv += this.bet_multi + ',' + this.start_bank + ',' + this.max_bank + ',' + this.take_home + ',' + this.payout + ',' + this.min_bet + ',' + this.win_odds + '\n';
 				},
 				importCSV() {
-					//TBD
+					
 				},
 				updateChart() {
 					chart.data.datasets[0].data.push(this.bank.toFixed(2));
@@ -271,8 +292,46 @@ var casino = new Vue({
 					chart.data.datasets[0].pointBorderColor = [];
 					chart.data.datasets[0].pointBackgroundColor = [];
 				},
+				showChart() {
+					//if the chart is hidden, then show it
+					if($('#chart').is(':hidden')) {
+						$('#chart').show();
+					}
+				},
+				hideChart() {
+					//if the chart is showing, then hide it
+					if($('#chart').is(':visible')) {
+						$('#chart').hide();
+					}
+				},
+				showPlot() {
+					//if the plot is hidden, then show it
+					if($('#heatmap').is(':hidden')) {
+						$('#heatmap').show();
+					}
+				},
+				hidePlot() {
+					//if the plot is showing, then hide it
+					if($('#heatmap').is(':visible')) {
+						$('#heatmap').hide();
+					}
+				},
 				softReset() {
-					this.clearChart();
+					if (this.chart_enabled) {
+						this.showChart();
+						this.clearChart();
+					}
+					if (!this.chart_enabled) {
+						this.clearChart();
+						this.hideChart();
+					}
+
+					if (this.plot_enabled) {
+						this.showPlot();
+					}
+					if (!this.plot_enabled) {
+						this.hidePlot();
+					}
 
 					this.current_bet = this.min_bet;
 					this.take_home = 0;
@@ -284,7 +343,6 @@ var casino = new Vue({
 
 					//Retain Plot data...
 				},
-				// TODO We need to clear the 3d plot on hardReset
 				hardReset() {
 					this.softReset();
 					this.clearPlotData();
