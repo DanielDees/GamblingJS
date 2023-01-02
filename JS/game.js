@@ -7,8 +7,8 @@ var casino = new Vue({
 				plot_enabled: false,
 
 				//Autoroller
-				default_roll_rate: 150,
-				roll_rate: 150,
+				default_roll_rate: 200,
+				roll_rate: 200,
 				min_bank_percent: 0,
 				roll_only_safe: true,
 
@@ -21,13 +21,13 @@ var casino = new Vue({
 					[]
 				],
 				
-				plotStartBankGranularity: 10,
-				plotStartBankDataSetSize: 50,
+				plotStartBankGranularity: 5,
+				plotStartBankDataSetSize: 100,
 
-				plotBetMultiGranularity: 0.02,
+				plotBetMultiGranularity: 0.01,
 				//plotBetMultiDataSetSize: 20,
 				
-				plotPointDataSetSize: 2000,
+				plotPointDataSetSize: 5000,
 
 				// Casino
 				payout_rate: 1,
