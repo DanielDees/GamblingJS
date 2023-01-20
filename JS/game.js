@@ -23,10 +23,7 @@ var casino = new Vue({
 					[]
 				],
 				
-				plotStartBankGranularity: 5,
 				plotStartBankDataSetSize: 150,
-
-				plotBetMultiGranularity: 0.01,
 				//plotBetMultiDataSetSize: 20,
 				
 				plotPointDataSetSize: 5000,
@@ -42,6 +39,9 @@ var casino = new Vue({
 				// Player
 				player_start_bank: 10,
 				player_max_bank: 10,
+				player_start_bank_increment: 5,
+				player_bet_multi_increment: 0.01,
+
 				player_bank: 10,
 				//safe_bet_limit: 1,
 				player_take_home: 0,
@@ -194,19 +194,19 @@ var casino = new Vue({
 				},
 				saveDataPoint() {
 					//Update to check against how granular we want the data to be when automated
-					//Plot data points to chart once granularity threshold is met
+					//Plot data points to chart once increment threshold is met
 					//z-axis: Average net profit (vertical component)
 
-					//x-axis: bet_multi
+					//x-axis: player_bet_multi
 					//y-axis: player_start_bank & player_max_bank
 					var y = this.plot_z_data.length - 1;
 
-					//Save Z-Axis data at current X/Y Coordinate (Will be saved as a percent of the starting bank.
+					//Save Z-Axis data at current X/Y Coordinate (Will be saved as a percent of the starting bank)
 					this.plot_z_data[y].push(this.savedAverageNetProfitPercent);
 
 					//Update for next Y Coordinate
-					this.player_start_bank += this.plotStartBankGranularity;
-					this.player_max_bank += this.plotStartBankGranularity;
+					this.player_start_bank += this.player_start_bank_increment;
+					this.player_max_bank += this.player_start_bank_increment;
 
 					//Go to next X-Axis Coordinate
 					if (this.plot_z_data[y].length >= this.plotStartBankDataSetSize) {
@@ -215,11 +215,11 @@ var casino = new Vue({
 						this.plot_z_data.push([]);
 
 						//Update for next X Coordinate
-						this.player_bet_multi += this.plotBetMultiGranularity;
+						this.player_bet_multi += this.player_bet_multi_increment;
 
 						//Reset Y-Axis Coordinate
-						this.player_start_bank = this.plotStartBankGranularity;
-						this.player_max_bank = this.plotStartBankGranularity;
+						this.player_start_bank = this.player_start_bank_increment;
+						this.player_max_bank = this.player_start_bank_increment;
 					}
 
 					//Update Plot
@@ -231,7 +231,9 @@ var casino = new Vue({
 					//For export/import tool
 					//https://stackoverflow.com/questions/14964035/how-to-export-javascript-array-info-to-csv-on-client-side
 
-					var title = "Bet Multi: " + this.plot_z_data.length + " | Start Bank: " + this.plot_z_data[this.plot_z_data.length - 1].length + " | Z-Set: " + this.plotPointDataSetSize;
+					var title = "Bet Multi: " + this.plot_z_data.length 
+								+ " | Start Bank: " + this.plot_z_data[this.plot_z_data.length - 1].length 
+								+ " | Z-Set: " + this.plotPointDataSetSize;
 
 					var layout = {
 					  title: title,
@@ -262,20 +264,119 @@ var casino = new Vue({
 						this.updatePlot();
 					}
 				},
+				//exportCSV is called from our HTML button
 				exportCSV() {
 					// Create a CSV file in the same directory as our index.html file
-					// CSV headers will include our betting strategy and the number of rounds played
-					// CSV data rows will include the number of rolls and the net profit for each round
-					var csv = 'Bet Multiplier,Start Bank,End Bank,Net Profit,Payout,Min Bet,Win%\n';
-					csv += this.player_bet_multi + ',' + this.player_start_bank + ',' + this.player_max_bank + ',' + this.player_take_home + ',' + this.payout + ',' + this.casino_min_bet + ',' + this.casino_win_odds + '\n';
-				},
-				importCSV() {
+					// CSV headers will be our X/Y cordinates in the plot (X = Bet Multi, Y = Start Bank)
+					// CSV data will be our Z cordinates in the plot (Z = Average Net Profit)
+					var csv = "Bet Multi,Start Bank,Average Net Profit\n";
+					for (var i = 0; i < this.plot_z_data.length; i++) {
+						for (var j = 0; j < this.plot_z_data[i].length; j++) {
+							csv += (i + 1) + "," + (j + 1) + "," + this.plot_z_data[i][j] + "\n";
+						}
+					}
+
+					var filename = "data.csv";
+					var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 					
+					//Create file | No IE support because if you use IE you're a fucking idiot <- Copilot wrote that comment. 
+					var link = document.createElement("a");
+					var url = URL.createObjectURL(blob);
+					link.setAttribute("href", url);
+					link.setAttribute("download", filename);
+					link.style.visibility = 'hidden';
+					document.body.appendChild(link);
+					link.click();
+					document.body.removeChild(link);
+				},
+				//importCSV is called from our HTML button
+				importCSV() {
+					//Open a file select prompt
+					var input = document.createElement('input');
+					input.type = 'file';
+					//When a file is selected, read it and update the plot
+					input.onchange = e => {
+						var file = e.target.files[0];
+						var reader = new FileReader();
+						reader.readAsText(file,'UTF-8');
+						reader.onload = readerEvent => {
+							var content = readerEvent.target.result;
+							//Update plot with imported data
+							this.parseCSV(content);
+						}
+					}
+					input.click();
+				},
+				//parseCSV is called from importCSV
+				parseCSV(content) {
+					//Take the csv content and parse it into an array for our plot data
+					var lines = content.split("\n");
+					var rows  = [];
+					for (var i=0; i < lines.length; i++) {
+						var data = lines[i].split(',');
+						if (data.length == 3) {
+							rows.push(data);
+						}
+					}
+					//Remove headers
+					rows.shift();
+
+					//Create a new array to hold our plot data
+					var plotData = [
+						[]
+					];
+
+					//Iterate through the CSV data and replace our existing plot data
+					for (var i = 0; i < rows.length; i++) {
+						var row = rows[i];
+						var betMulti = parseInt(row[0]);
+						var startBank = parseInt(row[1]);
+						var avgNetProfit = parseFloat(row[2]);
+
+						//We need to build the plotData array out the same way we build our plot_z_data array in saveDataPoint()
+						//Example plotData array:
+						//[
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+						//	[0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
+						//]
+
+						for (var j = 0; j < betMulti; j++) {
+							//If we don't have an array for this betMulti yet, create it
+							if (plotData[j] == undefined) {
+								plotData[j] = [];
+							}
+							//If we don't have an averageNetProfit for this startBank yet, create it
+							if (plotData[j][startBank - 1] == undefined) {
+								plotData[j][startBank - 1] = avgNetProfit;
+							}
+						}
+					}
+
+					//Update the plot with our new data
+					this.clearPlotData();
+					this.plot_z_data = plotData;
+
+					//Set our player settings to the last row in the CSV
+					this.player_start_bank = 10 + (plotData[0].length * this.player_start_bank_increment);
+					this.player_max_bank = this.player_start_bank;
+					this.player_bet_multi = 2.70 + (plotData.length * this.player_bet_multi_increment);
+
+					//Soft reset to remove any pre-import junk data
+					this.softReset();
+					this.updatePlot();
 				},
 				updateChart() {
 					chart.data.datasets[0].data.push(this.player_bank.toFixed(2));
 					chart.data.datasets[1].data.push(this.player_take_home);
-					chart.data.datasets[2].data.push((this.player_bank + this.player_take_home - this.player_start_bank).toFixed(2));
+					this.player_highest_bank = 0;
 
 					while (chart.data.datasets[0].data.length > this.history) {
 						chart.data.datasets[0].data.shift();
