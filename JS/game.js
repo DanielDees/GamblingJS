@@ -67,7 +67,7 @@ var casino = new Vue({
 					var investment = this.casino_min_bet;
 					var max_winnings = this.casino_min_bet * (this.casino_payout_rate + 1);
 
-					//@todo move this to be a param of payout() so payout can be called with <i> rounds to similuate winnings
+					//@TODO move this to be a param of payout() so payout can be called with <i> rounds to similuate winnings
 					for (var i = 1; i < 10; i++) {
 						//Increase theoretical investment by amount that would be bet after <i> lost bets
 						investment += Math.pow(this.player_bet_multi, i);
@@ -125,7 +125,7 @@ var casino = new Vue({
 					}
 
 					this.player_bank += this.payout;
-					this.player_highest_payout = Math.max(this.payout, this.highest_payout);
+					this.player_highest_payout = Math.max(this.payout, this.player_highest_payout);
 
 					var overflow = Math.max(this.player_bank - this.player_max_bank, 0);
 
