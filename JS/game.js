@@ -8,6 +8,8 @@ var casino = new Vue({
 
 				//Autoroller
 				default_roll_rate: 200,
+				total_rolls: 0,
+				wins: 0,
 				roll_rate: 200,
 				min_bank_percent: 0,
 				roll_only_safe: true,
@@ -22,7 +24,7 @@ var casino = new Vue({
 				],
 				
 				plotStartBankGranularity: 5,
-				plotStartBankDataSetSize: 100,
+				plotStartBankDataSetSize: 150,
 
 				plotBetMultiGranularity: 0.01,
 				//plotBetMultiDataSetSize: 20,
@@ -30,50 +32,48 @@ var casino = new Vue({
 				plotPointDataSetSize: 5000,
 
 				// Casino
-				payout_rate: 1,
-				win_odds: 48.6,
+				casino_payout_rate: 1,
+				casino_win_odds: 48.6,
 				//win_odds: 31.58,
-				min_bet: 1,
+				casino_min_bet: 1,
 				// TODO implement after splitting up the code properly into multiple vue classes
-				//max_bet: 25000
+				casino_max_bet: 25000,
 
 				// Player
-				wins: 0,
-				total_rolls: 0,
-				start_bank: 10,
-				max_bank: 10,
-				bank: 10,
+				player_start_bank: 10,
+				player_max_bank: 10,
+				player_bank: 10,
 				//safe_bet_limit: 1,
-				take_home: 0,
-				bet_multi: 2,
-				current_bet: 0,
-				highest_bet: 0,
-				highest_payout: 0,
-				investment: 0
+				player_take_home: 0,
+				player_bet_multi: 2.70,
+				player_current_bet: 0,
+				player_highest_bet: 0,
+				player_highest_payout: 0,
+				player_investment: 0
 			},
 			computed: {
 				safeBetCount() {
 					var max = 0;
 					//@todo Edit to calculate without while loop
-					while(this.current_bet * Math.pow(this.bet_multi, max + 1) < this.bank) { max++; }
+					while(this.player_current_bet * Math.pow(this.player_bet_multi, max + 1) < this.player_bank) { max++; }
 					return max;
 				},
 				safeBetOdds() {
-					var odds = Math.pow(1 - (this.win_odds / 100), this.safeBetCount) * 100;
+					var odds = Math.pow(1 - (this.casino_win_odds / 100), this.safeBetCount) * 100;
 
 					return "~1/" + (100 / odds).toFixed(0) + " (" + odds.toFixed(4) + "%)";
 				},
 				bet_profitability_ratio() {
-					var investment = this.min_bet;
-					var max_winnings = this.min_bet * (this.payout_rate + 1);
+					var investment = this.casino_min_bet;
+					var max_winnings = this.casino_min_bet * (this.casino_payout_rate + 1);
 
 					//@todo move this to be a param of payout() so payout can be called with <i> rounds to similuate winnings
 					for (var i = 1; i < 10; i++) {
 						//Increase theoretical investment by amount that would be bet after <i> lost bets
-						investment += Math.pow(this.bet_multi, i);
+						investment += Math.pow(this.player_bet_multi, i);
 
 						//Calculate theoretical winnings after losing <i> bets based on betting strategy
-						max_winnings = Math.pow(this.bet_multi, i) * (this.payout_rate + 1);
+						max_winnings = Math.pow(this.player_bet_multi, i) * (this.casino_payout_rate + 1);
 					}
 
 					var profit_ratio = max_winnings / investment;
@@ -81,10 +81,10 @@ var casino = new Vue({
 					return profit_ratio;
 				},
 				payout() {
-					return this.current_bet + (this.current_bet * this.payout_rate);
+					return this.player_current_bet + (this.player_current_bet * this.casino_payout_rate);
 				},
 				avgProfit() {
-					return ((this.bank + this.take_home - this.start_bank) / this.wins).toFixed(2);
+					return ((this.player_bank + this.player_take_home - this.player_start_bank) / this.wins).toFixed(2);
 				},
 				autoRollRate() {
 					return this.roll_rate > 0 ? 1000 / this.roll_rate : 500;
@@ -99,7 +99,7 @@ var casino = new Vue({
 					return this.savedNetProfit.reduce((sum, n) => sum + n, 0) / this.savedNetProfit.length;
 				},
 				savedAverageNetProfitPercent() {
-					return (this.savedAverageNetProfit / this.start_bank) * 100;
+					return (this.savedAverageNetProfit / this.player_start_bank) * 100;
 				},
 				savedDatasetSize() {
 					return this.savedRolls.length;
@@ -110,50 +110,50 @@ var casino = new Vue({
 			},
 			methods: {
 				bet() {
-					this.current_bet = Math.max(this.min_bet, this.current_bet * this.bet_multi);
-					this.current_bet = Math.min(this.current_bet, this.bank);
+					this.player_current_bet = Math.max(this.casino_min_bet, this.player_current_bet * this.player_bet_multi);
+					this.player_current_bet = Math.min(this.player_current_bet, this.player_bank);
 
-					this.bank -= this.current_bet;
-					this.investment += this.current_bet;
-					this.highest_bet = Math.max(this.current_bet, this.highest_bet);
+					this.player_bank -= this.player_current_bet;
+					this.player_investment += this.player_current_bet;
+					this.player_highest_bet = Math.max(this.player_current_bet, this.player_highest_bet);
 				},
 				win() {
 					if (this.chart_enabled) {
-						chart.data.labels.push("Win Bet: " + this.current_bet.toFixed(0));
+						chart.data.labels.push("Win Bet: " + this.player_current_bet.toFixed(0));
 						chart.data.datasets[0].pointBorderColor.push("#4B5");
 						chart.data.datasets[0].pointBackgroundColor.push("#4B5");
 					}
 
-					this.bank += this.payout;
-					this.highest_payout = Math.max(this.payout, this.highest_payout);
+					this.player_bank += this.payout;
+					this.player_highest_payout = Math.max(this.payout, this.highest_payout);
 
-					var overflow = Math.max(this.bank - this.max_bank, 0);
+					var overflow = Math.max(this.player_bank - this.player_max_bank, 0);
 
-					this.take_home += overflow;
-					this.bank -= overflow;
+					this.player_take_home += overflow;
+					this.player_bank -= overflow;
 
-					this.current_bet = this.min_bet;
-					this.investment = 0;
+					this.player_current_bet = this.casino_min_bet;
+					this.player_investment = 0;
 					this.wins++;
 				},
 				lose() {
 					if (this.chart_enabled) {
-						chart.data.labels.push("Lose Bet: " + this.current_bet.toFixed(0));
+						chart.data.labels.push("Lose Bet: " + this.player_current_bet.toFixed(0));
 						chart.data.datasets[0].pointBorderColor.push("#B22");
 						chart.data.datasets[0].pointBackgroundColor.push("#B22");
 					}					
 
 					if (this.bank < 0) {
-						var refill = this.start_bank - this.bank;
-						this.bank += refill;
-						this.take_home -= refill;
-						this.current_bet = this.min_bet;
+						var refill = this.player_start_bank - this.player_bank;
+						this.player_bank += refill;
+						this.player_take_home -= refill;
+						this.player_current_bet = this.casino_min_bet;
 					}
 				},
 				roll() {
 					this.total_rolls++;
 
-					if (Math.random() * 100 >= this.win_odds) {
+					if (Math.random() * 100 >= this.casino_win_odds) {
 						this.lose();
 						return;
 					}
@@ -179,7 +179,7 @@ var casino = new Vue({
 
 					if (endRound) {
 						this.savedRolls.push(this.total_rolls);
-						this.savedNetProfit.push(this.take_home + this.bank - this.start_bank);
+						this.savedNetProfit.push(this.player_take_home + this.player_bank - this.player_start_bank);
 						this.softReset();
 					}
 
@@ -187,7 +187,7 @@ var casino = new Vue({
 					//Continue running simulation until our long term return rate is negative by more than the designated % value 
 					//This ensures we do not log a positive return rate on losing betting strategies
 					//A cap is set at 100,000 in the case that a betting strategy that beats the buffer is found so we don't get softlocked
-					if ((this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -2) || this.savedDatasetSize > 120000) {
+					if ((this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -2) || this.savedDatasetSize > 50000) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
@@ -198,15 +198,15 @@ var casino = new Vue({
 					//z-axis: Average net profit (vertical component)
 
 					//x-axis: bet_multi
-					//y-axis: start_bank & max_bank
+					//y-axis: player_start_bank & player_max_bank
 					var y = this.plot_z_data.length - 1;
 
 					//Save Z-Axis data at current X/Y Coordinate (Will be saved as a percent of the starting bank.
 					this.plot_z_data[y].push(this.savedAverageNetProfitPercent);
 
 					//Update for next Y Coordinate
-					this.start_bank += this.plotStartBankGranularity;
-					this.max_bank += this.plotStartBankGranularity;
+					this.player_start_bank += this.plotStartBankGranularity;
+					this.player_max_bank += this.plotStartBankGranularity;
 
 					//Go to next X-Axis Coordinate
 					if (this.plot_z_data[y].length >= this.plotStartBankDataSetSize) {
@@ -215,11 +215,11 @@ var casino = new Vue({
 						this.plot_z_data.push([]);
 
 						//Update for next X Coordinate
-						this.bet_multi += this.plotBetMultiGranularity;
+						this.player_bet_multi += this.plotBetMultiGranularity;
 
 						//Reset Y-Axis Coordinate
-						this.start_bank = this.plotStartBankGranularity;
-						this.max_bank = this.plotStartBankGranularity;
+						this.player_start_bank = this.plotStartBankGranularity;
+						this.player_max_bank = this.plotStartBankGranularity;
 					}
 
 					//Update Plot
@@ -267,15 +267,15 @@ var casino = new Vue({
 					// CSV headers will include our betting strategy and the number of rounds played
 					// CSV data rows will include the number of rolls and the net profit for each round
 					var csv = 'Bet Multiplier,Start Bank,End Bank,Net Profit,Payout,Min Bet,Win%\n';
-					csv += this.bet_multi + ',' + this.start_bank + ',' + this.max_bank + ',' + this.take_home + ',' + this.payout + ',' + this.min_bet + ',' + this.win_odds + '\n';
+					csv += this.player_bet_multi + ',' + this.player_start_bank + ',' + this.player_max_bank + ',' + this.player_take_home + ',' + this.payout + ',' + this.casino_min_bet + ',' + this.casino_win_odds + '\n';
 				},
 				importCSV() {
 					
 				},
 				updateChart() {
-					chart.data.datasets[0].data.push(this.bank.toFixed(2));
-					chart.data.datasets[1].data.push(this.take_home);
-					chart.data.datasets[2].data.push((this.bank + this.take_home - this.start_bank).toFixed(2));
+					chart.data.datasets[0].data.push(this.player_bank.toFixed(2));
+					chart.data.datasets[1].data.push(this.player_take_home);
+					chart.data.datasets[2].data.push((this.player_bank + this.player_take_home - this.player_start_bank).toFixed(2));
 
 					while (chart.data.datasets[0].data.length > this.history) {
 						chart.data.datasets[0].data.shift();
@@ -337,13 +337,13 @@ var casino = new Vue({
 						this.hidePlot();
 					}
 
-					this.current_bet = this.min_bet;
-					this.take_home = 0;
-					this.bank = this.start_bank
+					this.player_current_bet = this.casino_min_bet;
+					this.player_take_home = 0;
+					this.player_bank = this.player_start_bank
 					this.wins = 0;
 					this.total_rolls = 0;
-					this.highest_bet = 0;
-					this.investment = 0;
+					this.player_highest_bet = 0;
+					this.player_investment = 0;
 
 					//Retain Plot data...
 				},
