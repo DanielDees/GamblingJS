@@ -183,22 +183,26 @@ var casino = new Vue({
 						this.softReset();
 					}
 
-					//Automation for 3D model
-					//Continue running simulation until our long term return rate is negative by more than the designated % value 
-					//This ensures we do not log a positive return rate on losing betting strategies
-					//A cap is set at 100,000 in the case that a betting strategy that beats the buffer is found so we don't get softlocked
-					if ((this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -2) || this.savedDatasetSize > 50000) {
+					/*
+						Continue running simulation until our long term return rate is negative by more than the designated % value 
+						This ensures we do not log a positive return rate on losing betting strategies
+						A cap is set in the case that a betting strategy that beats the buffer is found so we don't get softlocked
+						We take 50 - winrate as our threshold averageNetProfitPercent to continue until the softlocked cap is reached
+						This is so we can get a more accurate average net profit percent for a betting strategy that beats the expected return rate
+					*/
+					if ((this.savedDatasetSize >= this.plotPointDataSetSize && this.savedAverageNetProfitPercent < -(50 - this.winRate)) || this.savedDatasetSize > 50000) {
 						this.saveDataPoint();
 						this.hardReset();
 					}
 				},
 				saveDataPoint() {
-					//Update to check against how granular we want the data to be when automated
-					//Plot data points to chart once increment threshold is met
-					//z-axis: Average net profit (vertical component)
-
-					//x-axis: player_bet_multi
-					//y-axis: player_start_bank & player_max_bank
+					/*
+						Update to check against how granular we want the data to be when automated
+						Plot data points to chart once increment threshold is met
+						Z-axis: Average net profit (vertical component)
+						X-axis: player_bet_multi
+						Y-axis: player_start_bank & player_max_bank
+					*/
 					var y = this.plot_z_data.length - 1;
 
 					//Save Z-Axis data at current X/Y Coordinate (Will be saved as a percent of the starting bank)
@@ -266,17 +270,28 @@ var casino = new Vue({
 				},
 				//exportCSV is called from our HTML button
 				exportCSV() {
-					// Create a CSV file in the same directory as our index.html file
-					// CSV headers will be our X/Y cordinates in the plot (X = Bet Multi, Y = Start Bank)
-					// CSV data will be our Z cordinates in the plot (Z = Average Net Profit)
+					/* 
+						Create a CSV file in the same directory as our index.html file
+						CSV data will be our X/Y/Z cordinates in the plot (X = Bet Multi, Y = Start Bank, Z = Average Net Profit)
+
+						Example CSV:
+						Bet Multi,Start Bank,Average Net Profit
+						1,1,0.5
+						1,2,0.6
+						1,3,0.7
+						2,1,0.8
+						2,2,0.9
+						2,3,1.0
+					*/
 					var csv = "Bet Multi,Start Bank,Average Net Profit\n";
-					for (var i = 0; i < this.plot_z_data.length; i++) {
-						for (var j = 0; j < this.plot_z_data[i].length; j++) {
-							csv += (i + 1) + "," + (j + 1) + "," + this.plot_z_data[i][j] + "\n";
+					for (var betMulti = 0; betMulti < this.plot_z_data.length; betMulti++) {
+						for (var startBank = 0; startBank < this.plot_z_data[betMulti].length; startBank++) {
+							csv += (betMulti + 1) + "," + (startBank + 1) + "," + this.plot_z_data[betMulti][startBank] + "\n";
 						}
 					}
 
-					var filename = "data.csv";
+					//Filename will be a timestamp
+					var filename = "plot_data_" + new Date().getTime() + ".csv";
 					var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
 					
 					//Create file | No IE support because if you use IE you're a fucking idiot <- Copilot wrote that comment. 
