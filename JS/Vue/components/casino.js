@@ -1,54 +1,55 @@
-var casino = new Vue({
-			el: '#wrapper',
-			data: {
+export default {
+			mounted() {
+				console.log("Casino mounted...");
+			},
+			props: {
 				//Game Settings
-				history: 80,
-				plot_enabled: false,
+				history: { default: 80 },
+				plot_enabled: { default: false },
 
 				//Autoroller
-				default_roll_rate: 200,
-				total_rolls: 0,
-				wins: 0,
-				roll_rate: 200,
-				min_bank_percent: 0,
-				roll_only_safe: true,
+				default_roll_rate: { default: 200 },
+				total_rolls: { default: 0 },
+				wins: { default: 0 },
+				roll_rate: { default: 200 },
+				min_bank_percent: { default: 0 },
+				roll_only_safe: { default: true },
 
 				//SaveData
-				savedRolls: [],
-				savedNetProfit: [],
+				savedRolls: { default: [] },
+				savedNetProfit: { default: [] },
 
 				//For Plotly 3D model
-				plot_z_data: [
-					[]
-				],
-				
-				plotStartBankDataSetSize: 150,
-				//plotBetMultiDataSetSize: 20,
-				
-				plotPointDataSetSize: 5000,
+				plot_z_data: { default: [[]] },
+
+				plotStartBankDataSetSize: { default: 150 },
+				//plotBetMultiDataSetSize: { default: 20 },
+
+				plotPointDataSetSize: { default: 5000 },
 
 				// Casino
-				casino_payout_rate: 1,
-				casino_win_odds: 48.6,
+				casino_payout_rate: { default: 1 },
+				casino_win_odds: { default: 48.6 },
 				//win_odds: 31.58,
-				casino_min_bet: 1,
-				// TODO implement after splitting up the code properly into multiple vue classes
-				casino_max_bet: 25000,
+				casino_min_bet: { default: 1 },
+				// TODO - add a max bet
+				casino_max_bet: { default: 100000 },
 
-				// Player
-				player_start_bank: 10,
-				player_max_bank: 10,
-				player_start_bank_increment: 5,
-				player_bet_multi_increment: 0.01,
+				//Player
+				player_start_bank: { default: 10 },
+				player_max_bank: { default: 10 },
+				player_bank: { default: 10 },
+				player_take_home: { default: 0 },
+				player_bet_multi: { default: 2.70 },
+				player_current_bet: { default: 0 },
+				player_highest_bet: { default: 0 },
+				player_highest_payout: { default: 0 },
+				player_investment: { default: 0 }
 
-				player_bank: 10,
-				//safe_bet_limit: 1,
-				player_take_home: 0,
-				player_bet_multi: 2.70,
-				player_current_bet: 0,
-				player_highest_bet: 0,
-				player_highest_payout: 0,
-				player_investment: 0
+			},
+			data() {
+				return [
+				];
 			},
 			computed: {
 				safeBetCount() {
@@ -415,75 +416,4 @@ var casino = new Vue({
 					this.clearPlotData();
 				},
 			}
-		});
-
-// var ChartUpdater = new Vue({
-// 	el: '#wrapper',
-// 	data: {
-// 		chart_enabled: false,
-// 	},
-// 	methods: {
-// 		win(winBet) {
-// 			if (this.chart_enabled) {
-// 				chart.data.labels.push("Win Bet: " + winBet.toFixed(0));
-// 				chart.data.datasets[0].pointBorderColor.push("#4B5");
-// 				chart.data.datasets[0].pointBackgroundColor.push("#4B5");
-// 			}
-// 		},
-// 		lose(loseBet) {
-// 			if (this.chart_enabled) {
-// 				chart.data.labels.push("Lose Bet: " + loseBet.toFixed(2));
-// 				chart.data.datasets[0].pointBorderColor.push("#B22");
-// 				chart.data.datasets[0].pointBackgroundColor.push("#B22");
-// 			}
-// 		},
-// 		softReset() {
-// 			if (this.chart_enabled) {
-// 				this.showChart();
-// 				this.clearChart();
-// 			}
-// 			if (!this.chart_enabled) {
-// 				this.clearChart();
-// 				this.hideChart();
-// 			}
-// 		},
-// 		updateChart() {
-// 			if (this.chart_enabled) {
-// 				chart.data.datasets[0].data.push(casino.player_bank.toFixed(2));
-// 				chart.data.datasets[1].data.push(casino.player_take_home);
-// 				casino.player_highest_bank = 0;
-
-// 				while (chart.data.datasets[0].data.length > casino.history) {
-// 					chart.data.datasets[0].data.shift();
-// 					chart.data.datasets[1].data.shift();
-// 					chart.data.datasets[2].data.shift();
-// 					chart.data.datasets[0].pointBorderColor.shift();
-// 					chart.data.datasets[0].pointBackgroundColor.shift();
-// 					chart.data.labels.shift();
-// 				}
-
-// 				chart.update({ duration: Math.min(casino.autoRollRate * 2, 4000) });
-// 			}
-// 		},
-// 		clearChart() {
-// 			chart.data.labels = [];
-// 			chart.data.datasets[0].data = [];
-// 			chart.data.datasets[1].data = [];
-// 			chart.data.datasets[2].data = [];
-// 			chart.data.datasets[0].pointBorderColor = [];
-// 			chart.data.datasets[0].pointBackgroundColor = [];
-// 		},
-// 		showChart() {
-// 			//if the chart is hidden, then show it
-// 			if($('#chart').is(':hidden')) {
-// 				$('#chart').show();
-// 			}
-// 		},
-// 		hideChart() {
-// 			//if the chart is showing, then hide it
-// 			if($('#chart').is(':visible')) {
-// 				$('#chart').hide();
-// 			}
-// 		},
-// 	},
-// });
+		};

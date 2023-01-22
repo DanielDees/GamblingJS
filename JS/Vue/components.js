@@ -76,3 +76,127 @@ Vue.component('card', {
 Vue.component('card-item', {
 	template: `<li class="list-group-item"><slot></slot></li>`
 });
+
+Vue.component('chart-updater', {
+	template: `<canvas id="chart" style="display:none"><!-- Our gambling chart data will be shown here --></canvas>`,
+	created() {
+		this.initializeChart();
+	},
+	data() {
+		return {
+			chart_enabled: false,
+			chart: null
+		};
+	},
+	methods: {
+		win(winBet) {
+			if (this.chart_enabled) {
+				this.chart.data.labels.push("Win Bet: " + winBet.toFixed(0));
+				this.chart.data.datasets[0].pointBorderColor.push("#4B5");
+				this.chart.data.datasets[0].pointBackgroundColor.push("#4B5");
+			}
+		},
+		lose(loseBet) {
+			if (this.chart_enabled) {
+				this.chart.data.labels.push("Lose Bet: " + loseBet.toFixed(2));
+				this.chart.data.datasets[0].pointBorderColor.push("#B22");
+				this.chart.data.datasets[0].pointBackgroundColor.push("#B22");
+			}
+		},
+		softReset() {
+			if (this.chart_enabled) {
+				this.showChart();
+				this.clearChart();
+			}
+			if (!this.chart_enabled) {
+				this.clearChart();
+				this.hideChart();
+			}
+		},
+		initializeChart() {
+			this.chart = new Chart(
+				$("#chart")[0].getContext('2d'), 
+				{
+					type: 'line',
+					data: {
+						labels: [],
+						datasets: [
+						{
+							label: "Bank",
+							borderColor: "#000",
+							pointRadius: 8,
+							pointHoverRadius: 16,
+							pointBorderColor: [],
+							pointBackgroundColor: [],
+							data: []
+						},
+						{
+							label: "Take Home",
+							borderColor: "#58B",
+							pointRadius: 0,
+							data: []
+						},
+						{
+							label: "Net Profit",
+							borderColor: "#BB3",
+							pointRadius: 0,
+							data: []
+						}]
+					},
+					options: {
+						elements: {
+							line: {
+								tension: 0,
+							}
+						},
+						scales: {
+	            			yAxes: [{
+	            				beginAtZero: true,
+	                			stacked: false
+	            			}]
+	        			}
+					}
+				}
+			);
+		},
+		updateChart() {
+			if (this.chart_enabled) {
+				this.chart.data.datasets[0].data.push(casino.player_bank.toFixed(2));
+				this.chart.data.datasets[1].data.push(casino.player_take_home);
+				casino.player_highest_bank = 0;
+
+				while (this.chart.data.datasets[0].data.length > casino.history) {
+					this.chart.data.datasets[0].data.shift();
+					this.chart.data.datasets[1].data.shift();
+					this.chart.data.datasets[2].data.shift();
+					this.chart.data.datasets[0].pointBorderColor.shift();
+					this.chart.data.datasets[0].pointBackgroundColor.shift();
+					this.chart.data.labels.shift();
+				}
+
+				//Chart animation will last for 4 seconds, or twice the auto roll rate, whichever is less
+				this.chart.update({ duration: Math.min(casino.autoRollRate * 2, 4000) });
+			}
+		},
+		clearChart() {
+			this.chart.data.labels = [];
+			this.chart.data.datasets[0].data = [];
+			this.chart.data.datasets[1].data = [];
+			this.chart.data.datasets[2].data = [];
+			this.chart.data.datasets[0].pointBorderColor = [];
+			this.chart.data.datasets[0].pointBackgroundColor = [];
+		},
+		showChart() {
+			//if the chart is hidden, then show it
+			if($('#chart').is(':hidden')) {
+				$('#chart').show();
+			}
+		},
+		hideChart() {
+			//if the chart is showing, then hide it
+			if($('#chart').is(':visible')) {
+				$('#chart').hide();
+			}
+		},
+	},
+});

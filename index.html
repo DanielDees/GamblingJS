@@ -16,9 +16,9 @@
 	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
 
 	<!-- VUE -->
-	<script src="JS/Vue/vue.js"></script>
-	<script src="JS/Vue/components.js"></script>
-
+	<script src="https://unpkg.com/vue@3"></script>
+	<!-- <script src="JS/Vue/components.js"></script> -->
+	
 	<!-- Chart -->
 	<script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.7.3/Chart.bundle.js"></script>
 
@@ -33,7 +33,7 @@
 			<tab name="All"></tab>
 			<tab name="Settings">
 				<card class="bg-secondary">
-					<card-item>History: <input type="number" v-model.number="history" min="0" max="1000" step="1"></card-item>
+					<card-item>History: <input type="number" v-model.number="casino.history" min="0" max="1000" step="1"></card-item>
 					<card-item>Start Bank: <input type="number" v-model.number="player_start_bank" min="10" max="100000" step="5"></card-item>
 					<card-item>Max Bank: <input type="number" v-model.number="player_max_bank" min="10" max="100000" step="10"></card-item>
 					<card-item>Bet Multi: <input type="number" v-model.number="player_bet_multi" min="1" max="10.0" step="0.01"></card-item>
@@ -114,7 +114,31 @@
 
 	</div><!-- wrapper -->
 	
-	<script type="text/javascript" src="js/game.js"></script>
+	<script type="module">
+
+		// Import the components
+		import Tabs from './JS/Vue/components/tabs.js';
+		import Tab from './JS/Vue/components/tab.js';
+		import Card from './JS/Vue/components/card.js';
+		import CardItem from './JS/Vue/components/card-item.js';
+		import Casino from './JS/Vue/components/casino.js';
+
+		// Create a new Vue instance
+		let testApp = {
+			components: {
+				'tab': Tab,
+				'tabs': Tabs,
+				'card': Card,
+				'card-item': CardItem,
+				'casino': Casino,
+			},
+		};
+
+		// Mount the Vue instance
+		Vue.createApp(testApp).mount('#wrapper');
+
+	</script>
+	<!-- <script type="text/javascript" src="js/game.js"></script> -->
 	<script type="text/javascript">
 		//3D modeling library
 		//https://plotly.com/javascript/3d-surface-plots/
@@ -164,14 +188,14 @@
 			}
 		);
 
-		function runTimer() {
-			for (var i = 0; i < 4500; i++) {
-				casino.playRound();
-			}
-			timer = setTimeout(runTimer, casino.autoRollRate);
-		}
+		// function runTimer() {
+		// 	for (var i = 0; i < 4500; i++) {
+		// 		casino.playRound();
+		// 	}
+		// 	timer = setTimeout(runTimer, casino.autoRollRate);
+		// }
 
-		var timer = setTimeout(runTimer, 1000);
+		// var timer = setTimeout(runTimer, 1000);
 
 	</script>
 </body>
